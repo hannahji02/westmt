@@ -1032,11 +1032,25 @@
   }
 
   // 분산 제약 그룹 — 각 그룹 내에서는 모두 다른 팀이어야 함
-  // 그룹 간 같은 팀은 허용 (예: 그룹A의 김세형 + 그룹B의 최정학 같은 팀 OK)
   const SPREAD_GROUPS = [
     ['이지훈', '박민채', '김세형'],  // 그룹 A — 3명 모두 다른 팀
     ['최정학', '지혜은']               // 그룹 B — 2명 서로 다른 팀
   ];
+
+  // 상호 배제 쌍 — 이 두 명은 같은 팀이 될 수 없음
+  const EXCLUSION_PAIRS = [
+    ['박민채', '김가연'],
+    ['지혜은', '조우제'],
+    ['지혜은', '김석현'],
+    ['안지용', '김동현']
+  ];
+
+  // 헬퍼: 멤버를 특정 팀에 배치해도 상호 배제 제약을 위반하지 않는가?
+  function canPlaceInTeam(name, team) {
+    return !team.some(m => EXCLUSION_PAIRS.some(([a, b]) =>
+      (a === name && b === m.name) || (b === name && a === m.name)
+    ));
+  }
 
   function buildTeams() {
     const selectedAll = ALL_MEMBERS.filter(n => checkedState.get(n));
@@ -1047,9 +1061,36 @@
     }
 
     const teamCount = 4;
+
+    // 모든 제약을 만족하는 배치를 시도. 실패하면 재시도 (최대 200회)
+    let result = null;
+    for (let attempt = 0; attempt < 200; attempt++) {
+      result = tryBuild(selectedAll, total, teamCount);
+      if (result) break;
+    }
+
+    if (!result) {
+      return { error: '제약 조건을 만족하는 팀 편성이 불가능합니다.' };
+    }
+
+    // 팀 라벨 매칭 랜덤화
+    const teamOrder = shuffle([0,1,2,3]);
+    const ordered = teamOrder.map(i => result[i]);
+
+    return {
+      teams: ordered.map((t, i) => ({
+        ...TEAM_DATA[i],
+        members: shuffle(t),
+        size: t.length
+      })),
+      total
+    };
+  }
+
+  function tryBuild(selectedAll, total, teamCount) {
     const teams = Array.from({length: teamCount}, () => []);
 
-    // 1) 조별 목표 인원 계산 (큰 조 위치 랜덤)
+    // 1) 조별 목표 인원
     const base = Math.floor(total / teamCount);
     const remainder = total % teamCount;
     const bigTeams = shuffle([0,1,2,3]).slice(0, remainder);
@@ -1058,12 +1099,10 @@
     );
     const remainingSlots = [...targetSizes];
 
-    // 2) 분산 제약 그룹 멤버 우선 배치 — 그룹 내에서 서로 다른 조에 배치
-    //    그룹별로 처리하며, 같은 그룹에서 이미 배치된 멤버가 있는 조는 후보에서 제외
-    const placedInGroup = new Map(); // 그룹 인덱스 → Set(팀 인덱스)
+    // 2) 분산 제약 그룹 + 상호 배제 쌍 동시 만족하도록 그룹 멤버 우선 배치
+    const placedInGroup = new Map();
     SPREAD_GROUPS.forEach((g, gi) => placedInGroup.set(gi, new Set()));
 
-    // 모든 분산 제약 멤버 모으기 (셔플)
     const allSpreadMembers = [];
     SPREAD_GROUPS.forEach((g, gi) => {
       g.filter(n => selectedAll.includes(n)).forEach(name => {
@@ -1072,14 +1111,14 @@
     });
     const shuffledSpread = shuffle(allSpreadMembers);
 
-    shuffledSpread.forEach(({ name, groupIdx }) => {
-      // 자리가 남고, 같은 그룹 멤버가 아직 없는 조 후보
+    for (const { name, groupIdx } of shuffledSpread) {
       const usedTeams = placedInGroup.get(groupIdx);
       const candidates = [0,1,2,3].filter(i =>
-        remainingSlots[i] > 0 && !usedTeams.has(i)
+        remainingSlots[i] > 0 &&
+        !usedTeams.has(i) &&
+        canPlaceInTeam(name, teams[i])
       );
-      if (candidates.length === 0) return; // 이론상 발생 안 함 (그룹 크기 ≤ 4)
-      // 자리 많은 조 우선 + 랜덤
+      if (candidates.length === 0) return null; // 이번 시도 실패
       candidates.sort((a, b) => {
         if (remainingSlots[b] !== remainingSlots[a]) return remainingSlots[b] - remainingSlots[a];
         return Math.random() - 0.5;
@@ -1088,49 +1127,55 @@
       teams[target].push({ name });
       remainingSlots[target]--;
       usedTeams.add(target);
-    });
+    }
 
-    // 3) 나머지 멤버 (분산 제약 외 + 장병주) 성별 균등 라운드로빈
+    // 3) 나머지 멤버 성별 균등 + 상호 배제 만족 배치
     const placedNames = new Set(shuffledSpread.map(s => s.name));
     const otherMembers = selectedAll.filter(n => !placedNames.has(n));
 
-    const regsByGender = {
-      F: shuffle(otherMembers.filter(n => GENDER[n] === 'F')),
-      M: shuffle(otherMembers.filter(n => GENDER[n] === 'M'))
-    };
+    const F = shuffle(otherMembers.filter(n => GENDER[n] === 'F'));
+    const M = shuffle(otherMembers.filter(n => GENDER[n] === 'M'));
 
-    function distributeRoundRobin(members) {
-      if (members.length === 0) return;
-      let startIdx = Math.floor(Math.random() * teamCount);
-      let placed = 0;
-      let attempts = 0;
-      while (placed < members.length && attempts < teamCount * members.length * 2) {
-        const t = (startIdx + attempts) % teamCount;
-        if (remainingSlots[t] > 0) {
-          teams[t].push({ name: members[placed] });
-          remainingSlots[t]--;
-          placed++;
-        }
-        attempts++;
-        if (attempts % teamCount === 0) startIdx = (startIdx + 1) % teamCount;
-      }
+    function placeWithConstraint(name) {
+      // 자리 남고 상호 배제 위반 안 하는 조 후보
+      const candidates = [0,1,2,3].filter(i =>
+        remainingSlots[i] > 0 && canPlaceInTeam(name, teams[i])
+      );
+      if (candidates.length === 0) return false;
+      // 자리 많은 조 우선 (인원 균등 유지)
+      candidates.sort((a, b) => {
+        if (remainingSlots[b] !== remainingSlots[a]) return remainingSlots[b] - remainingSlots[a];
+        return Math.random() - 0.5;
+      });
+      const target = candidates[0];
+      teams[target].push({ name });
+      remainingSlots[target]--;
+      return true;
     }
 
-    distributeRoundRobin(regsByGender.F);
-    distributeRoundRobin(regsByGender.M);
+    // 라운드로빈 대신 제약 우선 — 상호 배제 대상 멤버를 먼저 처리
+    // (제약이 많은 멤버를 늦게 처리하면 자리가 없을 수 있음)
+    const constrainedNames = new Set();
+    EXCLUSION_PAIRS.forEach(([a, b]) => { constrainedNames.add(a); constrainedNames.add(b); });
 
-    // 4) 팀 인덱스 자체도 랜덤 셔플 (A/B/C/D 라벨이 매번 다르게 매칭되도록)
-    const teamOrder = shuffle([0,1,2,3]);
-    const orderedTeams = teamOrder.map(i => teams[i]);
+    const constrainedF = F.filter(n => constrainedNames.has(n));
+    const constrainedM = M.filter(n => constrainedNames.has(n));
+    const freeF = F.filter(n => !constrainedNames.has(n));
+    const freeM = M.filter(n => !constrainedNames.has(n));
 
-    return {
-      teams: orderedTeams.map((t, i) => ({
-        ...TEAM_DATA[i],
-        members: shuffle(t),
-        size: t.length
-      })),
-      total
-    };
+    // 제약 있는 멤버부터 (성별 섞어서)
+    for (const n of shuffle([...constrainedF, ...constrainedM])) {
+      if (!placeWithConstraint(n)) return null;
+    }
+    // 그 다음 자유 멤버 — 여성 먼저 (성비 균등)
+    for (const n of freeF) {
+      if (!placeWithConstraint(n)) return null;
+    }
+    for (const n of freeM) {
+      if (!placeWithConstraint(n)) return null;
+    }
+
+    return teams;
   }
 
   function startShuffleAnimation(durationMs, onComplete) {
