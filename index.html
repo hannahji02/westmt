@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WEST HOCKEY · 팀 룰렛</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Archivo+Black&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* 파스텔 팔레트 */
+    --coral: #F4A89A;
+    --coral-soft: #FBD7CF;
+    --coral-deep: #E88A78;
+    --mint: #5FB8A8;
+    --mint-soft: #C8E8E0;
+    --mint-deep: #4A9C8C;
+    --blue: #7DA3D9;
+    --blue-soft: #CFDDF0;
+    --blue-deep: #4A7BC8;
+    /* 콜드 그레이 (모던 베이스) */
+    --bg-base: #F0F2F5;
+    --bg-soft: #F7F8FA;
+    --grey-line: #E2E5EB;
+    --grey-mid: #C5CAD2;
+    --grey-deep: #8A92A0;
+    /* 잉크 */
+    --ink: #2A2F38;
+    --ink-soft: #5B6478;
+    --ink-faint: #8A92A4;
+    --black: #1A1F28;
+    /* 카드 */
+    --card: rgba(255, 255, 255, 0.85);
+    --card-solid: #FFFFFF;
+    /* 팀 컬러 */
+    --team-a: var(--blue-deep);
+    --team-b: var(--mint-deep);
+    --team-c: var(--coral-deep);
+    --team-d: #E8B800;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', -apple-system, sans-serif;
+    background: var(--bg-base);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ===== 배경 데코 (파스텔 닷 + 하키 기어) ===== */
+  .bg-deco {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .bg-deco-item {
+    position: absolute;
+    opacity: 0.55;
+    animation: floatGentle 8s ease-in-out infinite;
+  }
+  .bg-deco-item.dot {
+    border-radius: 50%;
+  }
+  @keyframes floatGentle {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(6px, -10px); }
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    padding: 24px 28px 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .logo {
+    height: 38px;
+    width: auto;
+    opacity: 0.85;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+  }
+
+  /* ===== HERO (GO WEST 텍스트) ===== */
+  .hero {
+    padding: 20px 0 32px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--blue-deep);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .hero-title {
+    font-family: 'Archivo Black', 'Inter', sans-serif;
+    font-size: clamp(48px, 9vw, 96px);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin: 0;
+  }
+  .hero-title .go-quote {
+    color: var(--ink);
+  }
+  .hero-title .west {
+    color: var(--blue-deep);
+  }
+  .hero-title .ice {
+    color: var(--ink);
+  }
+  .hero-title .hockey {
+    color: var(--mint-deep);
+  }
+  .hero-title .team {
+    color: var(--coral-deep);
+  }
+  .hero-sub {
+    margin-top: 18px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ===== TIP CARD ===== */
+  .tip-card {
+    max-width: 560px;
+    margin: 0 auto 28px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--grey-line);
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .tip-icon-wrap {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--blue-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--blue-deep);
+  }
+  .tip-body { flex: 1; }
+  .tip-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: var(--blue-deep);
+    margin-bottom: 4px;
+  }
+  .tip-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .tip-text strong {
+    color: var(--grey-deep);
+    font-weight: 700;
+  }
+
+  /* ===== PANEL ===== */
+  .panel {
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--grey-line);
+    border-radius: 22px;
+    padding: 28px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .panel-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-count {
+    color: var(--blue-deep);
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+  }
+  .panel-actions { display: flex; gap: 8px; }
+  .btn-mini {
+    border: 1.5px solid var(--grey-line);
+    background: transparent;
+    color: var(--ink-soft);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn-mini:hover {
+    border-color: var(--blue-deep);
+    color: var(--blue-deep);
+    background: var(--blue-soft);
+  }
+
+  /* ===== MEMBER CHIPS ===== */
+  .members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .member-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--grey-line);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+    background: rgba(255, 255, 255, 0.7);
+    position: relative;
+  }
+  .member-chip:hover {
+    border-color: var(--blue);
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
+  }
+  .member-chip.checked {
+    border-color: var(--blue);
+    background: rgba(125, 163, 217, 0.18);
+  }
+  .member-chip.seed.checked {
+    border-color: var(--grey-mid);
+    background: rgba(197, 202, 210, 0.22);
+  }
+
+  /* 체크박스 — 플랫 반투명 */
+  .check-box {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1.5px solid var(--grey-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .member-chip.checked .check-box {
+    background: var(--mint);
+    border-color: var(--mint);
+  }
+  .member-chip.seed.checked .check-box {
+    background: var(--grey-deep);
+    border-color: var(--grey-deep);
+  }
+  /* 체크 아이콘: 스틱 + 체크마크 교차 */
+  .check-icon {
+    width: 14px; height: 14px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .member-chip.checked .check-icon { opacity: 1; }
+  .member-name {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  /* SEED 네온 점 — 회색 + 글로우 */
+  .seed-neon-dot {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--grey-deep);
+    box-shadow:
+      0 0 4px rgba(138, 146, 160, 0.6),
+      0 0 8px rgba(138, 146, 160, 0.4),
+      0 0 12px rgba(138, 146, 160, 0.25);
+  }
+  /* 결과 카드 멤버 — 컬러 닷 */
+  .member-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0.75;
+  }
+  /* 결과 카드 시드 네온 점 — 우측 정렬 */
+  .team-member .seed-neon-dot {
+    position: static;
+    margin-left: auto;
+  }
+
+  /* ===== CTA — 퍽 드롭! ===== */
+  .cta-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 36px 0 32px;
+    position: relative;
+  }
+  .btn-spin {
+    background: linear-gradient(180deg, #2A2F38 0%, #1A1F28 100%);
+    color: #fff;
+    border: none;
+    padding: 22px 56px;
+    border-radius: 999px;
+    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(.4,1.6,.6,1);
+    box-shadow:
+      0 8px 24px rgba(26, 31, 40, 0.28),
+      inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-spin::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transition: left 0.6s;
+  }
+  .btn-spin:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow:
+      0 12px 32px rgba(74, 123, 200, 0.35),
+      inset 0 2px 0 rgba(255, 255, 255, 0.15);
+  }
+  .btn-spin:hover:not(:disabled)::after { left: 120%; }
+  .btn-spin:active:not(:disabled) { transform: translateY(0); }
+  .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-spin-icon {
+    width: 22px; height: 22px;
+  }
+
+  /* ===== RESULT STATUS ===== */
+  .result-status {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 20px;
+    min-height: 20px;
+    letter-spacing: -0.01em;
+  }
+  .result-status strong {
+    color: var(--blue-deep);
+    font-weight: 700;
+  }
+
+  /* ===== TEAM CARDS ===== */
+  .teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+  .team-card {
+    background: var(--card);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid var(--grey-line);
+    border-radius: 20px;
+    padding: 22px 20px;
+    min-height: 260px;
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+    transition: opacity 0.5s ease, transform 0.55s cubic-bezier(.2,1.4,.4,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .team-card::after {
+    /* 코너 데코 */
+    content: '';
+    position: absolute;
+    bottom: -30px; right: -30px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+  .team-a::after { background: radial-gradient(circle, var(--blue-soft) 0%, transparent 70%); }
+  .team-b::after { background: radial-gradient(circle, var(--mint-soft) 0%, transparent 70%); }
+  .team-c::after { background: radial-gradient(circle, var(--coral-soft) 0%, transparent 70%); }
+  .team-d::after { background: radial-gradient(circle, #FFF2A8 0%, transparent 70%); }
+
+  .team-card > * { position: relative; z-index: 1; }
+  .team-card.show { opacity: 1; transform: translateY(0) scale(1); }
+
+  .team-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--grey-line);
+    gap: 10px;
+  }
+  .team-name-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .team-mascot {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+  }
+  .team-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .team-mascot-name {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+  .team-a .team-name { color: var(--team-a); }
+  .team-b .team-name { color: var(--team-b); }
+  .team-c .team-name { color: var(--team-c); }
+  .team-d .team-name { color: var(--team-d); }
+  .team-size {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--grey-line);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  .team-members {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .team-member {
+    padding: 10px 12px;
+    background: rgba(247, 248, 250, 0.7);
+    border: 1px solid rgba(226, 229, 235, 0.6);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateX(-8px);
+    animation: slideIn 0.35s ease forwards;
+    position: relative;
+  }
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .team-member.is-seed {
+    background: rgba(232, 235, 240, 0.7);
+    border-color: var(--grey-mid);
+    color: var(--black);
+  }
+
+  /* ===== SHUFFLE OVERLAY ===== */
+  .shuffle-overlay {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at center, #F7F8FA 0%, #E2E5EB 100%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+    z-index: 100;
+    overflow: hidden;
+  }
+  .shuffle-overlay::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid var(--grey-line);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .shuffle-overlay::after {
+    content: '';
+    position: absolute;
+    width: 380px; height: 380px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid var(--grey-line);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .shuffle-overlay.show { display: flex; }
+
+  .puck-stage {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    z-index: 2;
+  }
+  .puck {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #2A2F38 0%, #1A1F28 100%);
+    box-shadow:
+      0 12px 30px rgba(26, 31, 40, 0.3),
+      inset 0 -6px 12px rgba(0,0,0,0.3),
+      inset 0 2px 6px rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: puckSpin 1.2s cubic-bezier(.2,.6,.3,1) forwards;
+  }
+  .puck-stick {
+    width: 80px;
+    height: 80px;
+    animation: stickWobble 1.2s cubic-bezier(.2,.6,.3,1) forwards;
+  }
+  @keyframes puckSpin {
+    0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: rotate(900deg) scale(1); opacity: 1; }
+  }
+  @keyframes stickWobble {
+    0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
+    20% { opacity: 1; transform: rotate(-15deg) scale(1); }
+    50% { transform: rotate(15deg) scale(1); }
+    100% { transform: rotate(0deg) scale(1); opacity: 1; }
+  }
+
+  .shuffle-text {
+    font-family: 'Archivo Black', 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    z-index: 2;
+  }
+  .shuffle-text em {
+    font-style: normal;
+    color: var(--coral-deep);
+  }
+  .shuffle-names {
+    font-size: 14px;
+    color: var(--ink-soft);
+    height: 20px;
+    font-variant-numeric: tabular-nums;
+    z-index: 2;
+    font-weight: 500;
+  }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+  }
+  .empty-state-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 16px;
+    opacity: 0.5;
+  }
+  .empty-state-text {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* ===== RE-ROLL ===== */
+  .reroll-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+  .btn-reroll {
+    border: 1.5px solid var(--grey-line);
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--ink);
+    padding: 12px 28px;
+    border-radius: 999px;
+    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-reroll:hover {
+    border-color: var(--coral-deep);
+    color: var(--coral-deep);
+    transform: translateY(-1px);
+  }
+  .btn-reroll svg {
+    width: 14px; height: 14px;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    fill: none;
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .header { padding: 16px 18px 0; }
+    .logo { height: 30px; }
+    .container { padding: 0 16px 60px; }
+    .hero { padding: 12px 0 24px; }
+    .hero-eyebrow { font-size: 10px; margin-bottom: 10px; }
+    .hero-sub { font-size: 13px; margin-top: 14px; }
+    .tip-card { padding: 12px 16px; gap: 10px; }
+    .tip-text { font-size: 12px; }
+    .panel { padding: 20px; border-radius: 18px; }
+    .panel-title { font-size: 14px; }
+    .members-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .member-chip { padding: 10px 12px; }
+    .member-name { font-size: 13px; }
+    .teams-grid { grid-template-columns: 1fr; }
+    .team-mascot { width: 40px; height: 40px; }
+    .team-name { font-size: 20px; }
+    .btn-spin { padding: 18px 42px; font-size: 17px; }
+    .puck-stage { width: 180px; height: 180px; }
+    .puck { width: 130px; height: 130px; }
+    .puck-stick { width: 65px; height: 65px; }
+    .shuffle-text { font-size: 24px; }
+    .shuffle-overlay::before { width: 420px; height: 420px; }
+    .shuffle-overlay::after { width: 260px; height: 260px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 배경 데코 ===== -->
+<div class="bg-deco" id="bgDeco"></div>
+
+<!-- ===== SVG DEFS ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 체크 아이콘: 스틱+체크마크 교차 -->
+    <symbol id="ic-stick-check" viewBox="0 0 24 24">
+      <!-- 스틱 (대각선) -->
+      <line x1="4" y1="6" x2="18" y2="20" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+      <!-- 스틱 블레이드 -->
+      <path d="M 17 19 L 21 19 L 21 21 L 16.5 21 Z" fill="white"/>
+      <!-- 체크마크 (X자) -->
+      <polyline points="6 14 9 17 14 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.85"/>
+    </symbol>
+
+    <!-- 헬멧 (라인) -->
+    <symbol id="ic-helmet" viewBox="0 0 24 24">
+      <path d="M 4 14 Q 4 5 12 5 Q 20 5 20 14 L 20 17 L 4 17 Z"
+            fill="none" stroke="#8A92A0" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="6.5" y1="13" x2="17.5" y2="13" stroke="#8A92A0" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="6.5" y1="15.5" x2="17.5" y2="15.5" stroke="#8A92A0" stroke-width="1.2" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- 하키 스틱 (멤버 옆) -->
+    <symbol id="ic-stick" viewBox="0 0 24 24">
+      <line x1="3" y1="4" x2="18" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M 18 19 L 22 19 L 22 21 L 18 21 Z" fill="currentColor"/>
+    </symbol>
+
+    <!-- 큰 스틱 (퍽 위) -->
+    <symbol id="ic-stick-big" viewBox="0 0 100 100">
+      <line x1="20" y1="22" x2="78" y2="80" stroke="#F4A89A" stroke-width="7" stroke-linecap="round"/>
+      <line x1="22" y1="24" x2="76" y2="78" stroke="#FBD7CF" stroke-width="2" stroke-linecap="round"/>
+      <path d="M 72 80 L 92 80 L 92 92 L 72 92 Z" fill="#F4A89A" stroke="#FBD7CF" stroke-width="1"/>
+      <line x1="76" y1="84" x2="88" y2="84" stroke="#FBD7CF" stroke-width="1" opacity="0.6"/>
+    </symbol>
+
+    <!-- 빈 상태 퍽 -->
+    <symbol id="ic-puck-empty" viewBox="0 0 80 80">
+      <ellipse cx="40" cy="45" rx="32" ry="10" fill="var(--blue-soft)" opacity="0.5"/>
+      <ellipse cx="40" cy="40" rx="32" ry="12" fill="var(--blue-deep)" opacity="0.6"/>
+    </symbol>
+
+    <!-- 입체 퍽 (배경 데코용) -->
+    <symbol id="deco-puck" viewBox="0 0 60 60">
+      <ellipse cx="30" cy="38" rx="24" ry="6" fill="#1A1F28" opacity="0.85"/>
+      <ellipse cx="30" cy="34" rx="24" ry="10" fill="#2A2F38"/>
+      <ellipse cx="30" cy="32" rx="22" ry="6" fill="#3A3F48" opacity="0.6"/>
+      <ellipse cx="24" cy="30" rx="6" ry="2" fill="#5A5F68" opacity="0.4"/>
+    </symbol>
+
+    <!-- 하키 스틱 (배경 데코용) -->
+    <symbol id="deco-stick" viewBox="0 0 80 80">
+      <line x1="10" y1="14" x2="62" y2="66" stroke="#5B6478" stroke-width="5" stroke-linecap="round"/>
+      <line x1="12" y1="16" x2="60" y2="64" stroke="#8A92A0" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M 58 66 L 74 66 L 74 74 L 58 74 Z" fill="#5B6478"/>
+      <line x1="61" y1="69" x2="71" y2="69" stroke="#C5CAD2" stroke-width="0.8" opacity="0.6"/>
+    </symbol>
+
+    <!-- ===== 팀 마스코트 4종 ===== -->
+
+    <!-- A. 펭귄 -->
+    <symbol id="mascot-penguin" viewBox="0 0 64 64">
+      <ellipse cx="32" cy="38" rx="20" ry="22" fill="#2A2F38"/>
+      <ellipse cx="32" cy="42" rx="13" ry="16" fill="#FFFFFF"/>
+      <circle cx="32" cy="22" r="14" fill="#2A2F38"/>
+      <ellipse cx="32" cy="25" rx="9" ry="8" fill="#FFFFFF"/>
+      <circle cx="28" cy="23" r="2" fill="#2A2F38"/>
+      <circle cx="36" cy="23" r="2" fill="#2A2F38"/>
+      <circle cx="28.5" cy="22.5" r="0.6" fill="#FFFFFF"/>
+      <circle cx="36.5" cy="22.5" r="0.6" fill="#FFFFFF"/>
+      <path d="M 30 27 L 34 27 L 32 30 Z" fill="#F4A89A"/>
+      <circle cx="24" cy="27" r="1.5" fill="#FBD7CF" opacity="0.7"/>
+      <circle cx="40" cy="27" r="1.5" fill="#FBD7CF" opacity="0.7"/>
+      <ellipse cx="26" cy="58" rx="4" ry="2" fill="#F4A89A"/>
+      <ellipse cx="38" cy="58" rx="4" ry="2" fill="#F4A89A"/>
+    </symbol>
+
+    <!-- B. 팬더 -->
+    <symbol id="mascot-panda" viewBox="0 0 64 64">
+      <ellipse cx="32" cy="42" rx="20" ry="18" fill="#FFFFFF" stroke="#2A2F38" stroke-width="0.8"/>
+      <ellipse cx="20" cy="48" rx="6" ry="9" fill="#2A2F38"/>
+      <ellipse cx="44" cy="48" rx="6" ry="9" fill="#2A2F38"/>
+      <circle cx="32" cy="24" r="15" fill="#FFFFFF" stroke="#2A2F38" stroke-width="0.8"/>
+      <circle cx="20" cy="14" r="5" fill="#2A2F38"/>
+      <circle cx="44" cy="14" r="5" fill="#2A2F38"/>
+      <ellipse cx="26" cy="24" rx="3.5" ry="4.5" fill="#2A2F38" transform="rotate(-15 26 24)"/>
+      <ellipse cx="38" cy="24" rx="3.5" ry="4.5" fill="#2A2F38" transform="rotate(15 38 24)"/>
+      <circle cx="26" cy="24" r="1.5" fill="#FFFFFF"/>
+      <circle cx="38" cy="24" r="1.5" fill="#FFFFFF"/>
+      <circle cx="26" cy="24" r="0.8" fill="#2A2F38"/>
+      <circle cx="38" cy="24" r="0.8" fill="#2A2F38"/>
+      <ellipse cx="32" cy="29" rx="2" ry="1.5" fill="#2A2F38"/>
+      <path d="M 32 30.5 L 32 32 M 32 32 Q 30 33.5 28.5 33 M 32 32 Q 34 33.5 35.5 33" stroke="#2A2F38" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- C. 돼지 -->
+    <symbol id="mascot-pig" viewBox="0 0 64 64">
+      <ellipse cx="32" cy="40" rx="20" ry="18" fill="#F4A89A"/>
+      <circle cx="32" cy="24" r="15" fill="#F4A89A"/>
+      <path d="M 18 15 Q 16 8 22 10 Q 24 14 22 18 Z" fill="#E88A78"/>
+      <path d="M 46 15 Q 48 8 42 10 Q 40 14 42 18 Z" fill="#E88A78"/>
+      <circle cx="22" cy="28" r="2.5" fill="#FBD7CF" opacity="0.8"/>
+      <circle cx="42" cy="28" r="2.5" fill="#FBD7CF" opacity="0.8"/>
+      <circle cx="27" cy="22" r="1.8" fill="#2A2F38"/>
+      <circle cx="37" cy="22" r="1.8" fill="#2A2F38"/>
+      <circle cx="27.5" cy="21.5" r="0.6" fill="#FFFFFF"/>
+      <circle cx="37.5" cy="21.5" r="0.6" fill="#FFFFFF"/>
+      <ellipse cx="32" cy="29" rx="5" ry="4" fill="#E88A78"/>
+      <ellipse cx="30" cy="29" rx="0.8" ry="1.2" fill="#2A2F38"/>
+      <ellipse cx="34" cy="29" rx="0.8" ry="1.2" fill="#2A2F38"/>
+      <ellipse cx="24" cy="56" rx="3" ry="2" fill="#E88A78"/>
+      <ellipse cx="40" cy="56" rx="3" ry="2" fill="#E88A78"/>
+    </symbol>
+
+    <!-- D. 개미 — 그레이 톤으로 통일 -->
+    <symbol id="mascot-ant" viewBox="0 0 64 64">
+      <circle cx="18" cy="32" r="9" fill="#8A92A0"/>
+      <ellipse cx="32" cy="32" rx="6" ry="7" fill="#6B7480"/>
+      <ellipse cx="48" cy="34" rx="11" ry="10" fill="#8A92A0"/>
+      <path d="M 14 26 Q 10 18 8 14" stroke="#5B6478" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M 18 24 Q 16 16 14 12" stroke="#5B6478" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="8" cy="14" r="1.5" fill="#5B6478"/>
+      <circle cx="14" cy="12" r="1.5" fill="#5B6478"/>
+      <path d="M 30 36 L 28 48 M 32 38 L 32 50 M 34 36 L 36 48" stroke="#5B6478" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M 30 28 L 26 18 M 34 28 L 38 18" stroke="#5B6478" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="15" cy="30" r="2" fill="#FFFFFF"/>
+      <circle cx="15" cy="30" r="1" fill="#2A2F38"/>
+      <circle cx="13" cy="34" r="1.5" fill="#C5CAD2" opacity="0.8"/>
+      <path d="M 12 35 Q 14 37 16 35" stroke="#2A2F38" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="header">
+  <img src="logo.png" alt="WEST HOCKEY" class="logo" onerror="this.style.display='none'">
+</header>
+
+<div class="container">
+
+  <section class="hero">
+    <div class="hero-eyebrow">WEST HOCKEY · MT TEAM ROULETTE</div>
+    <h1 class="hero-title">
+      <span class="go-quote">GO</span> <span class="west">WEST!</span><br>
+      <span class="ice">ICE</span> <span class="hockey">HOCKEY</span> <span class="team">TEAM</span>
+    </h1>
+    <p class="hero-sub">MT 조 편성 룰렛 · 시드 멤버는 각 조에 1명씩 자동 배치됩니다</p>
+  </section>
+
+  <!-- TIP -->
+  <div class="tip-card">
+    <div class="tip-icon-wrap">i</div>
+    <div class="tip-body">
+      <div class="tip-label">TIP</div>
+      <div class="tip-text">
+        <strong>감독·주장단</strong>은 항상 다른 조가 되도록 설정되어 있으며, 그 외 배치는 정말 랜덤입니다! 조장은 팀 멤버 중에서 따로 선정해 주세요.
+      </div>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2 class="panel-title">참가 멤버 · <span class="panel-count" id="count">0</span>명 선택됨</h2>
+      <div class="panel-actions">
+        <button class="btn-mini" id="selectAll">전체 선택</button>
+        <button class="btn-mini" id="deselectAll">전체 해제</button>
+      </div>
+    </div>
+    <div class="members-grid" id="membersGrid"></div>
+  </section>
+
+  <div class="cta-wrap">
+    <button class="btn-spin" id="spinBtn">
+      <span>퍽 드롭!</span>
+    </button>
+  </div>
+
+  <div class="result-status" id="resultStatus"></div>
+
+  <section id="resultSection">
+    <div class="empty-state" id="emptyState">
+      <svg class="empty-state-icon"><use href="#ic-puck-empty"/></svg>
+      <div class="empty-state-text">위 버튼을 눌러 팀을 편성해주세요</div>
+    </div>
+    <div class="teams-grid" id="teamsGrid" style="display:none;"></div>
+    <div class="reroll-wrap" id="rerollWrap" style="display:none;">
+      <button class="btn-reroll" id="rerollBtn">
+        <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        <span>다시 돌리기</span>
+      </button>
+    </div>
+  </section>
+
+</div>
+
+<div class="shuffle-overlay" id="shuffleOverlay">
+  <div class="puck-stage">
+    <div class="puck"></div>
+  </div>
+  <div class="shuffle-text">DROP THE <em>PUCK!</em></div>
+  <div class="shuffle-names" id="shuffleNames">&nbsp;</div>
+</div>
+
+<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+
+<script>
+  // ===== 배경 데코 생성 =====
+  (function setupBgDeco() {
+    const deco = document.getElementById('bgDeco');
+    const colors = ['#FBD7CF', '#C8E8E0', '#CFDDF0', '#F4A89A', '#5FB8A8', '#7DA3D9'];
+    // 작은 닷 18개
+    for (let i = 0; i < 18; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'bg-deco-item dot';
+      const size = 8 + Math.random() * 60;
+      dot.style.width = dot.style.height = size + 'px';
+      dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+      dot.style.top = (Math.random() * 100) + '%';
+      dot.style.left = (Math.random() * 100) + '%';
+      dot.style.opacity = (0.25 + Math.random() * 0.35).toFixed(2);
+      dot.style.animationDelay = (Math.random() * 4) + 's';
+      dot.style.animationDuration = (6 + Math.random() * 6) + 's';
+      deco.appendChild(dot);
+    }
+    // 퍽 4개
+    for (let i = 0; i < 4; i++) {
+      const wrap = document.createElement('div');
+      wrap.className = 'bg-deco-item';
+      const size = 32 + Math.random() * 26;
+      wrap.style.width = wrap.style.height = size + 'px';
+      wrap.style.top = (8 + Math.random() * 80) + '%';
+      wrap.style.left = (Math.random() * 92) + '%';
+      wrap.style.opacity = (0.18 + Math.random() * 0.15).toFixed(2);
+      wrap.style.animationDelay = (Math.random() * 4) + 's';
+      wrap.style.animationDuration = (7 + Math.random() * 5) + 's';
+      wrap.style.transform = `rotate(${Math.random()*30 - 15}deg)`;
+      wrap.innerHTML = `<svg width="100%" height="100%"><use href="#deco-puck"/></svg>`;
+      deco.appendChild(wrap);
+    }
+    // 스틱 3개
+    for (let i = 0; i < 3; i++) {
+      const wrap = document.createElement('div');
+      wrap.className = 'bg-deco-item';
+      const size = 48 + Math.random() * 36;
+      wrap.style.width = wrap.style.height = size + 'px';
+      wrap.style.top = (Math.random() * 90) + '%';
+      wrap.style.left = (Math.random() * 90) + '%';
+      wrap.style.opacity = (0.18 + Math.random() * 0.15).toFixed(2);
+      wrap.style.animationDelay = (Math.random() * 4) + 's';
+      wrap.style.animationDuration = (8 + Math.random() * 4) + 's';
+      wrap.style.transform = `rotate(${Math.random()*120 - 60}deg)`;
+      wrap.innerHTML = `<svg width="100%" height="100%"><use href="#deco-stick"/></svg>`;
+      deco.appendChild(wrap);
+    }
+  })();
+
+  // ===== 멤버 데이터 =====
+  const SEED_MEMBERS = ['김세형', '장병주', '최정학', '지혜은'];
+  const REGULAR_MEMBERS = [
+    '강다연', '강소현', '김동현', '김석현', '김예은',
+    '문인화', '안지용', '유광현', '이다연', '이지훈',
+    '이태경', '조우제', '최준성', '박민채', '김가연'
+  ];
+  const ALL_MEMBERS = [...SEED_MEMBERS, ...REGULAR_MEMBERS];
+
+  // 성별 매핑 (M: 남, F: 여) — 성비 균등 분배용
+  const GENDER = {
+    '김동현':'M', '김석현':'M', '김세형':'M', '안지용':'M', '유광현':'M',
+    '이지훈':'M', '이태경':'M', '장병주':'M', '조우제':'M', '최정학':'M',
+    '최준성':'M', '박민채':'M',
+    '강다연':'F', '강소현':'F', '김예은':'F', '문인화':'F',
+    '이다연':'F', '지혜은':'F', '김가연':'F'
+  };
+
+  const TEAM_DATA = [
+    { label: 'A', mascot: 'penguin', mascotName: 'Penguin' },
+    { label: 'B', mascot: 'panda',   mascotName: 'Panda' },
+    { label: 'C', mascot: 'pig',     mascotName: 'Pig' },
+    { label: 'D', mascot: 'ant',     mascotName: 'Ant' }
+  ];
+
+  // ===== State =====
+  const checkedState = new Map();
+  ALL_MEMBERS.forEach(name => checkedState.set(name, true));
+
+  const grid = document.getElementById('membersGrid');
+  const countEl = document.getElementById('count');
+  const spinBtn = document.getElementById('spinBtn');
+  const resultStatus = document.getElementById('resultStatus');
+  const teamsGrid = document.getElementById('teamsGrid');
+  const emptyState = document.getElementById('emptyState');
+  const shuffleOverlay = document.getElementById('shuffleOverlay');
+  const shuffleNames = document.getElementById('shuffleNames');
+  const rerollWrap = document.getElementById('rerollWrap');
+  const rerollBtn = document.getElementById('rerollBtn');
+
+  function renderMembers() {
+    grid.innerHTML = '';
+    const seedSorted = [...SEED_MEMBERS].sort((a,b) => a.localeCompare(b, 'ko'));
+    const regSorted = [...REGULAR_MEMBERS].sort((a,b) => a.localeCompare(b, 'ko'));
+    const ordered = [...seedSorted, ...regSorted];
+
+    ordered.forEach(name => {
+      const isSeed = SEED_MEMBERS.includes(name);
+      const checked = checkedState.get(name);
+      const chip = document.createElement('div');
+      chip.className = 'member-chip' + (checked ? ' checked' : '');
+      chip.innerHTML = `
+        <div class="check-box">
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="5 12 10 17 19 7"/>
+          </svg>
+        </div>
+        <span class="member-name">${name}</span>
+      `;
+      chip.addEventListener('click', () => {
+        checkedState.set(name, !checkedState.get(name));
+        renderMembers();
+        updateCount();
+      });
+      grid.appendChild(chip);
+    });
+  }
+
+  function updateCount() {
+    const n = [...checkedState.values()].filter(Boolean).length;
+    countEl.textContent = n;
+  }
+
+  document.getElementById('selectAll').addEventListener('click', () => {
+    ALL_MEMBERS.forEach(n => checkedState.set(n, true));
+    renderMembers(); updateCount();
+  });
+  document.getElementById('deselectAll').addEventListener('click', () => {
+    ALL_MEMBERS.forEach(n => checkedState.set(n, false));
+    renderMembers(); updateCount();
+  });
+
+  renderMembers();
+  updateCount();
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildTeams() {
+    const selectedSeeds = SEED_MEMBERS.filter(n => checkedState.get(n));
+    const selectedRegs = REGULAR_MEMBERS.filter(n => checkedState.get(n));
+    const total = selectedSeeds.length + selectedRegs.length;
+
+    if (total < 4) {
+      return { error: '최소 4명 이상 선택해야 합니다.' };
+    }
+
+    const teamCount = 4;
+    const teams = Array.from({length: teamCount}, () => []);
+
+    // 1) 시드 배치 (조 순서 랜덤)
+    const shuffledSeeds = shuffle(selectedSeeds);
+    const teamOrder = shuffle([0, 1, 2, 3]);
+    shuffledSeeds.forEach((seed, i) => {
+      teams[teamOrder[i]].push({ name: seed, isSeed: true });
+    });
+
+    // 2) 조별 목표 인원 계산 (큰 조 위치 랜덤)
+    const base = Math.floor(total / teamCount);
+    const remainder = total % teamCount;
+    const bigTeams = shuffle([0,1,2,3]).slice(0, remainder);
+    const targetSizes = Array.from({length: teamCount}, (_, i) =>
+      bigTeams.includes(i) ? base + 1 : base
+    );
+
+    // 3) 성별 균등 분배: 일반 멤버를 성별로 나눠 각각 셔플 후
+    //    여성을 먼저 라운드로빈으로 배치하고, 남은 자리에 남성을 배치
+    //    이렇게 하면 각 조 여성 수 차이가 최대 1명으로 보장됨
+    const regsByGender = {
+      F: shuffle(selectedRegs.filter(n => GENDER[n] === 'F')),
+      M: shuffle(selectedRegs.filter(n => GENDER[n] === 'M'))
+    };
+
+    // 각 조의 남은 자리 = target - 현재 시드 수
+    const remainingSlots = teams.map((t, i) => targetSizes[i] - t.length);
+
+    // 라운드로빈 분배 함수
+    // 시작 조 인덱스를 랜덤하게 잡아 매번 같은 조에 첫 멤버가 가지 않도록 함
+    function distributeRoundRobin(members) {
+      if (members.length === 0) return;
+      let startIdx = Math.floor(Math.random() * teamCount);
+      let placed = 0;
+      let attempts = 0;
+      while (placed < members.length && attempts < teamCount * members.length * 2) {
+        const t = (startIdx + attempts) % teamCount;
+        if (remainingSlots[t] > 0) {
+          teams[t].push({ name: members[placed], isSeed: false });
+          remainingSlots[t]--;
+          placed++;
+        }
+        attempts++;
+        // 한 바퀴 돌고 다음 라운드로 (시작점도 조금씩 이동)
+        if (attempts % teamCount === 0) startIdx = (startIdx + 1) % teamCount;
+      }
+    }
+
+    // 여성 먼저 (소수 그룹 우선 배치 = 성비 균등에 유리)
+    distributeRoundRobin(regsByGender.F);
+    // 남성 (남은 자리 채움)
+    distributeRoundRobin(regsByGender.M);
+
+    return {
+      teams: teams.map((t, i) => ({
+        ...TEAM_DATA[i],
+        members: shuffle(t),
+        size: t.length,
+        femaleCount: t.filter(m => GENDER[m.name] === 'F').length,
+        maleCount: t.filter(m => GENDER[m.name] === 'M').length
+      })),
+      total,
+      seedCount: selectedSeeds.length
+    };
+  }
+
+  function startShuffleAnimation(durationMs, onComplete) {
+    const puckEl = shuffleOverlay.querySelector('.puck');
+    if (puckEl) {
+      puckEl.style.animation = 'none';
+      void puckEl.offsetWidth;
+      puckEl.style.animation = '';
+    }
+
+    shuffleOverlay.classList.add('show');
+
+    const checkedNames = ALL_MEMBERS.filter(n => checkedState.get(n));
+    const interval = setInterval(() => {
+      const samples = shuffle(checkedNames).slice(0, 3).join(' · ');
+      shuffleNames.textContent = samples || '\u00A0';
+    }, 70);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      shuffleOverlay.classList.remove('show');
+      onComplete();
+    }, durationMs);
+  }
+
+  function renderResult(result) {
+    if (result.error) {
+      resultStatus.textContent = result.error;
+      emptyState.style.display = 'block';
+      teamsGrid.style.display = 'none';
+      rerollWrap.style.display = 'none';
+      return;
+    }
+    const { teams, total, seedCount } = result;
+    const sizesStr = teams.map(t => t.size).join(' / ');
+    const genderStr = teams.map(t => `남${t.maleCount}·여${t.femaleCount}`).join(' / ');
+    resultStatus.innerHTML = `총 <strong>${total}명</strong> · 시드 ${seedCount}명 · 조별 인원 <strong>${sizesStr}</strong> · 성비 ${genderStr}`;
+
+    emptyState.style.display = 'none';
+    teamsGrid.style.display = 'grid';
+    rerollWrap.style.display = 'flex';
+    teamsGrid.innerHTML = '';
+
+    teams.forEach((team, idx) => {
+      const card = document.createElement('div');
+      card.className = `team-card team-${team.label.toLowerCase()}`;
+      const membersHtml = team.members.map((m, i) => `
+        <li class="team-member" style="animation-delay:${i * 70}ms">
+          <span class="member-dot" style="background: var(--team-${team.label.toLowerCase()})"></span>
+          <span>${m.name}</span>
+        </li>
+      `).join('');
+      card.innerHTML = `
+        <div class="team-card-header">
+          <div class="team-name-group">
+            <svg class="team-mascot"><use href="#mascot-${team.mascot}"/></svg>
+            <div>
+              <div class="team-name">TEAM ${team.label}</div>
+              <div class="team-mascot-name">${team.mascotName}</div>
+            </div>
+          </div>
+          <div class="team-size">${team.size}명</div>
+        </div>
+        <ul class="team-members">${membersHtml}</ul>
+      `;
+      teamsGrid.appendChild(card);
+      setTimeout(() => card.classList.add('show'), idx * 100);
+    });
+
+    setTimeout(() => launchConfetti(), 200);
+  }
+
+  function runRoulette() {
+    const result = buildTeams();
+    if (result.error) {
+      resultStatus.textContent = result.error;
+      return;
+    }
+    spinBtn.disabled = true;
+    rerollBtn.disabled = true;
+    startShuffleAnimation(1200, () => {
+      renderResult(result);
+      spinBtn.disabled = false;
+      rerollBtn.disabled = false;
+      setTimeout(() => {
+        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    });
+  }
+  spinBtn.addEventListener('click', runRoulette);
+  rerollBtn.addEventListener('click', runRoulette);
+
+  // ===== 컨페티 (파스텔 컬러) =====
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let confettiRunning = false;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function launchConfetti() {
+    particles = [];
+    // 파스텔 팔레트만 사용
+    const colors = ['#F4A89A', '#FBD7CF', '#5FB8A8', '#C8E8E0', '#7DA3D9', '#CFDDF0', '#E88A78'];
+    const types = ['circle', 'square', 'rect'];
+    const count = 100;
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: canvas.width / 2 + (Math.random() - 0.5) * 240,
+        y: canvas.height / 2 + (Math.random() - 0.5) * 100,
+        vx: (Math.random() - 0.5) * 14,
+        vy: -Math.random() * 14 - 6,
+        gravity: 0.32 + Math.random() * 0.1,
+        rotation: Math.random() * Math.PI * 2,
+        vRotation: (Math.random() - 0.5) * 0.3,
+        type: types[Math.floor(Math.random() * types.length)],
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: 6 + Math.random() * 8,
+        life: 1.0,
+        opacity: 1
+      });
+    }
+    if (!confettiRunning) {
+      confettiRunning = true;
+      requestAnimationFrame(updateConfetti);
+    }
+  }
+
+  function drawParticle(p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation);
+    ctx.globalAlpha = p.opacity;
+    ctx.fillStyle = p.color;
+
+    if (p.type === 'circle') {
+      ctx.beginPath();
+      ctx.arc(0, 0, p.size * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (p.type === 'square') {
+      ctx.fillRect(-p.size*0.5, -p.size*0.5, p.size, p.size);
+    } else {
+      // 직사각형 (얇은 종이 모양)
+      ctx.fillRect(-p.size*0.8, -p.size*0.25, p.size*1.6, p.size*0.5);
+    }
+    ctx.restore();
+  }
+
+  function updateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.vy += p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.vRotation;
+      p.life -= 0.005;
+      p.opacity = Math.max(0, Math.min(1, p.life * 1.5));
+      drawParticle(p);
+    });
+    particles = particles.filter(p => p.life > 0 && p.y < canvas.height + 50);
+
+    if (particles.length > 0) {
+      requestAnimationFrame(updateConfetti);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confettiRunning = false;
+    }
+  }
+</script>
+
+</body>
+</html>
