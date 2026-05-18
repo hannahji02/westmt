@@ -838,19 +838,8 @@
       <span class="go-quote">GO</span> <span class="west">WEST!</span><br>
       <span class="ice">ICE</span> <span class="hockey">HOCKEY</span> <span class="team">TEAM</span>
     </h1>
-    <p class="hero-sub">MT 조 편성 룰렛 · 시드 멤버는 각 조에 1명씩 자동 배치됩니다</p>
+    <p class="hero-sub">MT 조 편성 룰렛</p>
   </section>
-
-  <!-- TIP -->
-  <div class="tip-card">
-    <div class="tip-icon-wrap">i</div>
-    <div class="tip-body">
-      <div class="tip-label">TIP</div>
-      <div class="tip-text">
-        <strong>감독·주장단</strong>은 항상 다른 조가 되도록 설정되어 있으며, 그 외 배치는 정말 랜덤입니다! 조장은 팀 멤버 중에서 따로 선정해 주세요.
-      </div>
-    </div>
-  </div>
 
   <section class="panel">
     <div class="panel-header">
@@ -1042,10 +1031,16 @@
     return a;
   }
 
+  // 분산 제약 그룹 — 각 그룹 내에서는 모두 다른 팀이어야 함
+  // 그룹 간 같은 팀은 허용 (예: 그룹A의 김세형 + 그룹B의 최정학 같은 팀 OK)
+  const SPREAD_GROUPS = [
+    ['이지훈', '박민채', '김세형'],  // 그룹 A — 3명 모두 다른 팀
+    ['최정학', '지혜은']               // 그룹 B — 2명 서로 다른 팀
+  ];
+
   function buildTeams() {
-    const selectedSeeds = SEED_MEMBERS.filter(n => checkedState.get(n));
-    const selectedRegs = REGULAR_MEMBERS.filter(n => checkedState.get(n));
-    const total = selectedSeeds.length + selectedRegs.length;
+    const selectedAll = ALL_MEMBERS.filter(n => checkedState.get(n));
+    const total = selectedAll.length;
 
     if (total < 4) {
       return { error: '최소 4명 이상 선택해야 합니다.' };
@@ -1054,34 +1049,56 @@
     const teamCount = 4;
     const teams = Array.from({length: teamCount}, () => []);
 
-    // 1) 시드 배치 (조 순서 랜덤)
-    const shuffledSeeds = shuffle(selectedSeeds);
-    const teamOrder = shuffle([0, 1, 2, 3]);
-    shuffledSeeds.forEach((seed, i) => {
-      teams[teamOrder[i]].push({ name: seed, isSeed: true });
-    });
-
-    // 2) 조별 목표 인원 계산 (큰 조 위치 랜덤)
+    // 1) 조별 목표 인원 계산 (큰 조 위치 랜덤)
     const base = Math.floor(total / teamCount);
     const remainder = total % teamCount;
     const bigTeams = shuffle([0,1,2,3]).slice(0, remainder);
     const targetSizes = Array.from({length: teamCount}, (_, i) =>
       bigTeams.includes(i) ? base + 1 : base
     );
+    const remainingSlots = [...targetSizes];
 
-    // 3) 성별 균등 분배: 일반 멤버를 성별로 나눠 각각 셔플 후
-    //    여성을 먼저 라운드로빈으로 배치하고, 남은 자리에 남성을 배치
-    //    이렇게 하면 각 조 여성 수 차이가 최대 1명으로 보장됨
+    // 2) 분산 제약 그룹 멤버 우선 배치 — 그룹 내에서 서로 다른 조에 배치
+    //    그룹별로 처리하며, 같은 그룹에서 이미 배치된 멤버가 있는 조는 후보에서 제외
+    const placedInGroup = new Map(); // 그룹 인덱스 → Set(팀 인덱스)
+    SPREAD_GROUPS.forEach((g, gi) => placedInGroup.set(gi, new Set()));
+
+    // 모든 분산 제약 멤버 모으기 (셔플)
+    const allSpreadMembers = [];
+    SPREAD_GROUPS.forEach((g, gi) => {
+      g.filter(n => selectedAll.includes(n)).forEach(name => {
+        allSpreadMembers.push({ name, groupIdx: gi });
+      });
+    });
+    const shuffledSpread = shuffle(allSpreadMembers);
+
+    shuffledSpread.forEach(({ name, groupIdx }) => {
+      // 자리가 남고, 같은 그룹 멤버가 아직 없는 조 후보
+      const usedTeams = placedInGroup.get(groupIdx);
+      const candidates = [0,1,2,3].filter(i =>
+        remainingSlots[i] > 0 && !usedTeams.has(i)
+      );
+      if (candidates.length === 0) return; // 이론상 발생 안 함 (그룹 크기 ≤ 4)
+      // 자리 많은 조 우선 + 랜덤
+      candidates.sort((a, b) => {
+        if (remainingSlots[b] !== remainingSlots[a]) return remainingSlots[b] - remainingSlots[a];
+        return Math.random() - 0.5;
+      });
+      const target = candidates[0];
+      teams[target].push({ name });
+      remainingSlots[target]--;
+      usedTeams.add(target);
+    });
+
+    // 3) 나머지 멤버 (분산 제약 외 + 장병주) 성별 균등 라운드로빈
+    const placedNames = new Set(shuffledSpread.map(s => s.name));
+    const otherMembers = selectedAll.filter(n => !placedNames.has(n));
+
     const regsByGender = {
-      F: shuffle(selectedRegs.filter(n => GENDER[n] === 'F')),
-      M: shuffle(selectedRegs.filter(n => GENDER[n] === 'M'))
+      F: shuffle(otherMembers.filter(n => GENDER[n] === 'F')),
+      M: shuffle(otherMembers.filter(n => GENDER[n] === 'M'))
     };
 
-    // 각 조의 남은 자리 = target - 현재 시드 수
-    const remainingSlots = teams.map((t, i) => targetSizes[i] - t.length);
-
-    // 라운드로빈 분배 함수
-    // 시작 조 인덱스를 랜덤하게 잡아 매번 같은 조에 첫 멤버가 가지 않도록 함
     function distributeRoundRobin(members) {
       if (members.length === 0) return;
       let startIdx = Math.floor(Math.random() * teamCount);
@@ -1090,31 +1107,29 @@
       while (placed < members.length && attempts < teamCount * members.length * 2) {
         const t = (startIdx + attempts) % teamCount;
         if (remainingSlots[t] > 0) {
-          teams[t].push({ name: members[placed], isSeed: false });
+          teams[t].push({ name: members[placed] });
           remainingSlots[t]--;
           placed++;
         }
         attempts++;
-        // 한 바퀴 돌고 다음 라운드로 (시작점도 조금씩 이동)
         if (attempts % teamCount === 0) startIdx = (startIdx + 1) % teamCount;
       }
     }
 
-    // 여성 먼저 (소수 그룹 우선 배치 = 성비 균등에 유리)
     distributeRoundRobin(regsByGender.F);
-    // 남성 (남은 자리 채움)
     distributeRoundRobin(regsByGender.M);
 
+    // 4) 팀 인덱스 자체도 랜덤 셔플 (A/B/C/D 라벨이 매번 다르게 매칭되도록)
+    const teamOrder = shuffle([0,1,2,3]);
+    const orderedTeams = teamOrder.map(i => teams[i]);
+
     return {
-      teams: teams.map((t, i) => ({
+      teams: orderedTeams.map((t, i) => ({
         ...TEAM_DATA[i],
         members: shuffle(t),
-        size: t.length,
-        femaleCount: t.filter(m => GENDER[m.name] === 'F').length,
-        maleCount: t.filter(m => GENDER[m.name] === 'M').length
+        size: t.length
       })),
-      total,
-      seedCount: selectedSeeds.length
+      total
     };
   }
 
@@ -1149,10 +1164,9 @@
       rerollWrap.style.display = 'none';
       return;
     }
-    const { teams, total, seedCount } = result;
+    const { teams, total } = result;
     const sizesStr = teams.map(t => t.size).join(' / ');
-    const genderStr = teams.map(t => `남${t.maleCount}·여${t.femaleCount}`).join(' / ');
-    resultStatus.innerHTML = `총 <strong>${total}명</strong> · 시드 ${seedCount}명 · 조별 인원 <strong>${sizesStr}</strong> · 성비 ${genderStr}`;
+    resultStatus.innerHTML = `총 <strong>${total}명</strong> · 조별 인원 <strong>${sizesStr}</strong>`;
 
     emptyState.style.display = 'none';
     teamsGrid.style.display = 'grid';
