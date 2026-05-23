@@ -31,11 +31,11 @@
     /* 카드 */
     --card: rgba(255, 255, 255, 0.85);
     --card-solid: #FFFFFF;
-    /* 팀 컬러 */
-    --team-a: var(--blue-deep);
-    --team-b: var(--mint-deep);
-    --team-c: var(--coral-deep);
-    --team-d: #E8B800;
+    /* 팀 컬러 — 빨강/파랑/노랑/초록 */
+    --team-a: var(--coral-deep);   /* 빨강 */
+    --team-b: var(--blue-deep);    /* 파랑 */
+    --team-c: #E8B800;             /* 노랑 */
+    --team-d: var(--mint-deep);    /* 초록 */
   }
 
   * { box-sizing: border-box; }
@@ -50,22 +50,10 @@
     position: relative;
   }
 
-  /* ===== 배경 데코 (파스텔 닷 + 하키 기어) ===== */
-  .bg-deco {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .bg-deco-item {
-    position: absolute;
-    opacity: 0.55;
-    animation: floatGentle 8s ease-in-out infinite;
-  }
-  .bg-deco-item.dot {
-    border-radius: 50%;
-  }
+  /* ===== 배경 데코 ===== */
+  .bg-deco { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  .bg-deco-item { position: absolute; opacity: 0.55; animation: floatGentle 8s ease-in-out infinite; }
+  .bg-deco-item.dot { border-radius: 50%; }
   @keyframes floatGentle {
     0%, 100% { transform: translate(0, 0); }
     50% { transform: translate(6px, -10px); }
@@ -74,164 +62,86 @@
   /* ===== HEADER ===== */
   .header {
     padding: 24px 28px 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .logo {
-    height: 38px;
-    width: auto;
-    opacity: 0.85;
+  .sync-status {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
   }
+  .sync-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #C5CAD2;
+    transition: background 0.3s;
+  }
+  .sync-dot.connected {
+    background: var(--mint-deep);
+    box-shadow: 0 0 6px rgba(74, 156, 140, 0.5);
+    animation: syncPulse 2s infinite;
+  }
+  @keyframes syncPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .logo { height: 38px; width: auto; opacity: 0.85; }
 
   .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-    position: relative;
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 24px 80px; position: relative;
   }
 
-  /* ===== HERO (GO WEST 텍스트) ===== */
-  .hero {
-    padding: 20px 0 32px;
-    text-align: center;
-  }
+  /* ===== HERO ===== */
+  .hero { padding: 20px 0 32px; text-align: center; }
   .hero-eyebrow {
     font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    color: var(--blue-deep);
-    margin-bottom: 14px;
-    text-transform: uppercase;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.22em; color: var(--blue-deep);
+    margin-bottom: 14px; text-transform: uppercase;
   }
   .hero-title {
     font-family: 'Archivo Black', 'Inter', sans-serif;
     font-size: clamp(48px, 9vw, 96px);
-    font-weight: 900;
-    line-height: 0.92;
-    letter-spacing: -0.04em;
-    color: var(--ink);
-    margin: 0;
+    font-weight: 900; line-height: 0.92;
+    letter-spacing: -0.04em; color: var(--ink); margin: 0;
   }
-  .hero-title .go-quote {
-    color: var(--ink);
-  }
-  .hero-title .west {
-    color: var(--blue-deep);
-  }
-  .hero-title .ice {
-    color: var(--ink);
-  }
-  .hero-title .hockey {
-    color: var(--mint-deep);
-  }
-  .hero-title .team {
-    color: var(--coral-deep);
-  }
+  .hero-title .go-quote { color: var(--ink); }
+  .hero-title .west { color: var(--blue-deep); }
+  .hero-title .ice { color: var(--ink); }
+  .hero-title .hockey { color: var(--mint-deep); }
+  .hero-title .team { color: var(--coral-deep); }
   .hero-sub {
-    margin-top: 18px;
-    color: var(--ink-soft);
-    font-size: 15px;
-    letter-spacing: -0.01em;
-  }
-
-  /* ===== TIP CARD ===== */
-  .tip-card {
-    max-width: 560px;
-    margin: 0 auto 28px;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid var(--grey-line);
-    border-radius: 14px;
-    padding: 14px 20px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .tip-icon-wrap {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--blue-soft);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-family: 'Inter', sans-serif;
-    font-weight: 800;
-    font-size: 14px;
-    color: var(--blue-deep);
-  }
-  .tip-body { flex: 1; }
-  .tip-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    color: var(--blue-deep);
-    margin-bottom: 4px;
-  }
-  .tip-text {
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--ink);
-    letter-spacing: -0.01em;
-  }
-  .tip-text strong {
-    color: var(--grey-deep);
-    font-weight: 700;
+    margin-top: 18px; color: var(--ink-soft);
+    font-size: 15px; letter-spacing: -0.01em;
   }
 
   /* ===== PANEL ===== */
   .panel {
     background: var(--card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--grey-line);
-    border-radius: 22px;
-    padding: 28px;
-    margin-bottom: 24px;
-    position: relative;
+    border-radius: 22px; padding: 28px; margin-bottom: 24px; position: relative;
   }
   .panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
   }
   .panel-title {
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 16px; font-weight: 700; letter-spacing: -0.01em;
+    margin: 0; display: flex; align-items: center; gap: 8px;
   }
   .panel-count {
     color: var(--blue-deep);
-    font-variant-numeric: tabular-nums;
-    font-weight: 800;
+    font-variant-numeric: tabular-nums; font-weight: 800;
   }
   .panel-actions { display: flex; gap: 8px; }
   .btn-mini {
     border: 1.5px solid var(--grey-line);
-    background: transparent;
-    color: var(--ink-soft);
-    padding: 7px 14px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
+    background: transparent; color: var(--ink-soft);
+    padding: 7px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
   }
   .btn-mini:hover {
-    border-color: var(--blue-deep);
-    color: var(--blue-deep);
+    border-color: var(--blue-deep); color: var(--blue-deep);
     background: var(--blue-soft);
   }
 
@@ -242,17 +152,11 @@
     gap: 8px;
   }
   .member-chip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    border: 1.5px solid var(--grey-line);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.18s;
-    user-select: none;
-    background: rgba(255, 255, 255, 0.7);
-    position: relative;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border: 1.5px solid var(--grey-line);
+    border-radius: 12px; cursor: pointer;
+    transition: all 0.18s; user-select: none;
+    background: rgba(255, 255, 255, 0.7); position: relative;
   }
   .member-chip:hover {
     border-color: var(--blue);
@@ -263,130 +167,53 @@
     border-color: var(--blue);
     background: rgba(125, 163, 217, 0.18);
   }
-  .member-chip.seed.checked {
-    border-color: var(--grey-mid);
-    background: rgba(197, 202, 210, 0.22);
-  }
-
-  /* 체크박스 — 플랫 반투명 */
   .check-box {
-    width: 20px; height: 20px;
-    border-radius: 6px;
+    width: 20px; height: 20px; border-radius: 6px;
     background: rgba(255, 255, 255, 0.6);
     border: 1.5px solid var(--grey-mid);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.18s;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.18s;
   }
   .member-chip.checked .check-box {
-    background: var(--mint);
-    border-color: var(--mint);
+    background: var(--mint); border-color: var(--mint);
   }
-  .member-chip.seed.checked .check-box {
-    background: var(--grey-deep);
-    border-color: var(--grey-deep);
-  }
-  /* 체크 아이콘: 스틱 + 체크마크 교차 */
-  .check-icon {
-    width: 14px; height: 14px;
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
+  .check-icon { width: 14px; height: 14px; opacity: 0; transition: opacity 0.15s; }
   .member-chip.checked .check-icon { opacity: 1; }
-  .member-name {
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-  /* SEED 네온 점 — 회색 + 글로우 */
-  .seed-neon-dot {
-    position: absolute;
-    top: -4px; right: -4px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--grey-deep);
-    box-shadow:
-      0 0 4px rgba(138, 146, 160, 0.6),
-      0 0 8px rgba(138, 146, 160, 0.4),
-      0 0 12px rgba(138, 146, 160, 0.25);
-  }
-  /* 결과 카드 멤버 — 컬러 닷 */
-  .member-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    opacity: 0.75;
-  }
-  /* 결과 카드 시드 네온 점 — 우측 정렬 */
-  .team-member .seed-neon-dot {
-    position: static;
-    margin-left: auto;
-  }
+  .member-name { font-size: 14px; font-weight: 500; letter-spacing: -0.01em; }
+  .member-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; opacity: 0.75; }
 
-  /* ===== CTA — 퍽 드롭! ===== */
-  .cta-wrap {
-    display: flex;
-    justify-content: center;
-    margin: 36px 0 32px;
-    position: relative;
-  }
+  /* ===== CTA ===== */
+  .cta-wrap { display: flex; justify-content: center; margin: 36px 0 32px; position: relative; }
   .btn-spin {
     background: linear-gradient(180deg, #2A2F38 0%, #1A1F28 100%);
-    color: #fff;
-    border: none;
-    padding: 22px 56px;
-    border-radius: 999px;
+    color: #fff; border: none;
+    padding: 22px 56px; border-radius: 999px;
     font-family: 'Inter', 'Noto Sans KR', sans-serif;
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(.4,1.6,.6,1);
-    box-shadow:
-      0 8px 24px rgba(26, 31, 40, 0.28),
-      inset 0 2px 0 rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    position: relative;
-    overflow: hidden;
+    font-size: 18px; font-weight: 800; letter-spacing: 0.08em;
+    cursor: pointer; transition: all 0.25s cubic-bezier(.4,1.6,.6,1);
+    box-shadow: 0 8px 24px rgba(26, 31, 40, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    display: flex; align-items: center; gap: 14px; position: relative; overflow: hidden;
   }
   .btn-spin::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
+    content: ''; position: absolute; top: 0; left: -100%;
     width: 60%; height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
     transition: left 0.6s;
   }
   .btn-spin:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow:
-      0 12px 32px rgba(74, 123, 200, 0.35),
-      inset 0 2px 0 rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 32px rgba(74, 123, 200, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.15);
   }
   .btn-spin:hover:not(:disabled)::after { left: 120%; }
   .btn-spin:active:not(:disabled) { transform: translateY(0); }
   .btn-spin:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-spin-icon {
-    width: 22px; height: 22px;
-  }
 
   /* ===== RESULT STATUS ===== */
   .result-status {
-    text-align: center;
-    color: var(--ink-soft);
-    font-size: 14px;
-    margin-bottom: 20px;
-    min-height: 20px;
-    letter-spacing: -0.01em;
+    text-align: center; color: var(--ink-soft);
+    font-size: 14px; margin-bottom: 20px; min-height: 20px; letter-spacing: -0.01em;
   }
-  .result-status strong {
-    color: var(--blue-deep);
-    font-weight: 700;
-  }
+  .result-status strong { color: var(--blue-deep); font-weight: 700; }
 
   /* ===== TEAM CARDS ===== */
   .teams-grid {
@@ -396,280 +223,201 @@
   }
   .team-card {
     background: var(--card);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1.5px solid var(--grey-line);
-    border-radius: 20px;
-    padding: 22px 20px;
-    min-height: 260px;
-    opacity: 0;
-    transform: translateY(20px) scale(0.96);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid var(--grey-line); border-radius: 20px;
+    padding: 22px 20px; min-height: 260px;
+    opacity: 0; transform: translateY(20px) scale(0.96);
     transition: opacity 0.5s ease, transform 0.55s cubic-bezier(.2,1.4,.4,1);
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
   }
-  /* 팀장 체크박스 (동그라미) */
   .captain-check {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid var(--grey-mid);
-    background: #FFFFFF;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.18s;
-    padding: 0;
-    margin-left: auto;
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid var(--grey-mid); background: #FFFFFF;
+    cursor: pointer; flex-shrink: 0; transition: all 0.18s;
+    padding: 0; margin-left: auto;
   }
   .captain-check:hover {
-    border-color: var(--blue-deep);
-    transform: scale(1.1);
+    border-color: var(--blue-deep); transform: scale(1.1);
   }
   .team-member.is-captain .captain-check {
-    background: var(--blue-deep);
-    border-color: var(--blue-deep);
+    background: var(--blue-deep); border-color: var(--blue-deep);
   }
-
   .team-card > * { position: relative; z-index: 1; }
   .team-card.show { opacity: 1; transform: translateY(0) scale(1); }
-
   .team-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-    padding-bottom: 14px;
-    border-bottom: 1px dashed var(--grey-line);
-    gap: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px; padding-bottom: 14px;
+    border-bottom: 1px dashed var(--grey-line); gap: 10px;
   }
-  .team-name-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .team-name-group { display: flex; align-items: center; gap: 12px; }
   .team-name {
     font-family: 'Inter', 'Noto Sans KR', sans-serif;
-    font-size: 20px;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
+    font-size: 20px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
   }
   .team-a .team-name { color: var(--team-a); }
   .team-b .team-name { color: var(--team-b); }
   .team-c .team-name { color: var(--team-c); }
   .team-d .team-name { color: var(--team-d); }
   .team-size {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--ink-soft);
+    font-size: 12px; font-weight: 700; color: var(--ink-soft);
     background: rgba(255, 255, 255, 0.7);
     border: 1px solid var(--grey-line);
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
+    padding: 4px 10px; border-radius: 999px;
+    font-variant-numeric: tabular-nums; flex-shrink: 0;
   }
-
-  .team-members {
-    list-style: none;
-    margin: 0; padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+  .team-members { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   .team-member {
     padding: 10px 12px;
     background: rgba(247, 248, 250, 0.7);
     border: 1px solid rgba(226, 229, 235, 0.6);
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0;
-    transform: translateX(-8px);
-    animation: slideIn 0.35s ease forwards;
-    position: relative;
+    border-radius: 10px; font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    opacity: 0; transform: translateX(-8px);
+    animation: slideIn 0.35s ease forwards; position: relative;
   }
-  @keyframes slideIn {
-    to { opacity: 1; transform: translateX(0); }
+  @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+
+  /* ===== 팀 확정 영역 ===== */
+  .confirm-wrap {
+    display: none;
+    flex-direction: column; align-items: center; gap: 14px;
+    margin-top: 36px;
   }
-  .team-member.is-seed {
-    background: rgba(232, 235, 240, 0.7);
-    border-color: var(--grey-mid);
-    color: var(--black);
+  .confirm-wrap.show { display: flex; }
+  .confirm-status {
+    font-size: 13px; color: var(--ink-soft);
+    text-align: center; letter-spacing: -0.01em;
   }
+  .confirm-status strong { color: var(--ink); font-weight: 700; }
+  .confirm-status.ready { color: var(--mint-deep); font-weight: 600; }
+  .btn-confirm {
+    background: linear-gradient(135deg, var(--mint-deep) 0%, #3A8C7C 100%);
+    color: #fff; border: none;
+    padding: 18px 48px; border-radius: 999px;
+    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    font-size: 16px; font-weight: 800; letter-spacing: 0.06em;
+    cursor: pointer; transition: all 0.25s cubic-bezier(.4,1.6,.6,1);
+    box-shadow: 0 8px 24px rgba(74, 156, 140, 0.35);
+    display: flex; align-items: center; gap: 10px;
+    position: relative; overflow: hidden;
+  }
+  .btn-confirm:disabled {
+    background: var(--grey-mid); cursor: not-allowed;
+    box-shadow: none; opacity: 0.6;
+  }
+  .btn-confirm:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(74, 156, 140, 0.45);
+  }
+  .btn-confirm:active:not(:disabled) { transform: translateY(0); }
+  .btn-confirm.confirmed {
+    background: linear-gradient(135deg, #6FB890 0%, var(--mint-deep) 100%);
+  }
+
+  /* 확정 완료 토스트 */
+  .toast {
+    position: fixed;
+    top: 30px; left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--mint-deep); color: #fff;
+    padding: 14px 24px; border-radius: 999px;
+    font-size: 14px; font-weight: 700;
+    box-shadow: 0 10px 30px rgba(74, 156, 140, 0.4);
+    z-index: 200; opacity: 0;
+    transition: transform 0.4s cubic-bezier(.2,1.4,.4,1), opacity 0.3s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .toast.error { background: var(--coral-deep); box-shadow: 0 10px 30px rgba(232, 138, 120, 0.4); }
 
   /* ===== SHUFFLE OVERLAY ===== */
   .shuffle-overlay {
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at center, #F7F8FA 0%, #E2E5EB 100%);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 24px;
-    z-index: 100;
-    overflow: hidden;
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at center, #F7F8FA 0%, #E2E5EB 100%);
+    display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 24px; z-index: 100; overflow: hidden;
   }
   .shuffle-overlay::before {
-    content: '';
-    position: absolute;
+    content: ''; position: absolute;
     width: 600px; height: 600px;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     border: 2px solid var(--grey-line);
-    border-radius: 50%;
-    pointer-events: none;
+    border-radius: 50%; pointer-events: none;
   }
   .shuffle-overlay::after {
-    content: '';
-    position: absolute;
+    content: ''; position: absolute;
     width: 380px; height: 380px;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     border: 2px solid var(--grey-line);
-    border-radius: 50%;
-    pointer-events: none;
+    border-radius: 50%; pointer-events: none;
   }
   .shuffle-overlay.show { display: flex; }
-
-  .puck-stage {
-    position: relative;
-    width: 220px;
-    height: 220px;
-    z-index: 2;
-  }
+  .puck-stage { position: relative; width: 220px; height: 220px; z-index: 2; }
   .puck {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
+    position: absolute; inset: 0; margin: auto;
+    width: 160px; height: 160px; border-radius: 50%;
     background: linear-gradient(180deg, #2A2F38 0%, #1A1F28 100%);
-    box-shadow:
-      0 12px 30px rgba(26, 31, 40, 0.3),
-      inset 0 -6px 12px rgba(0,0,0,0.3),
-      inset 0 2px 6px rgba(255,255,255,0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    box-shadow: 0 12px 30px rgba(26, 31, 40, 0.3), inset 0 -6px 12px rgba(0,0,0,0.3), inset 0 2px 6px rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
     animation: puckSpin 1.2s cubic-bezier(.2,.6,.3,1) forwards;
-  }
-  .puck-stick {
-    width: 80px;
-    height: 80px;
-    animation: stickWobble 1.2s cubic-bezier(.2,.6,.3,1) forwards;
   }
   @keyframes puckSpin {
     0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
     20% { opacity: 1; }
     100% { transform: rotate(900deg) scale(1); opacity: 1; }
   }
-  @keyframes stickWobble {
-    0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
-    20% { opacity: 1; transform: rotate(-15deg) scale(1); }
-    50% { transform: rotate(15deg) scale(1); }
-    100% { transform: rotate(0deg) scale(1); opacity: 1; }
-  }
-
   .shuffle-text {
     font-family: 'Archivo Black', 'Inter', sans-serif;
-    font-size: 32px;
-    font-weight: 900;
-    letter-spacing: 0.02em;
-    color: var(--ink);
-    z-index: 2;
+    font-size: 32px; font-weight: 900; letter-spacing: 0.02em;
+    color: var(--ink); z-index: 2;
   }
-  .shuffle-text em {
-    font-style: normal;
-    color: var(--coral-deep);
-  }
+  .shuffle-text em { font-style: normal; color: var(--coral-deep); }
   .shuffle-names {
-    font-size: 14px;
-    color: var(--ink-soft);
-    height: 20px;
-    font-variant-numeric: tabular-nums;
-    z-index: 2;
-    font-weight: 500;
+    font-size: 14px; color: var(--ink-soft);
+    height: 20px; font-variant-numeric: tabular-nums;
+    z-index: 2; font-weight: 500;
   }
 
   /* ===== EMPTY STATE ===== */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--ink-soft);
-  }
-  .empty-state-icon {
-    width: 70px;
-    height: 70px;
-    margin: 0 auto 16px;
-    opacity: 0.5;
-  }
-  .empty-state-text {
-    font-size: 14px;
-    font-weight: 500;
-  }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
+  .empty-state-icon { width: 70px; height: 70px; margin: 0 auto 16px; opacity: 0.5; }
+  .empty-state-text { font-size: 14px; font-weight: 500; }
 
   /* ===== RE-ROLL ===== */
-  .reroll-wrap {
-    display: flex;
-    justify-content: center;
-    margin-top: 32px;
-  }
+  .reroll-wrap { display: flex; justify-content: center; margin-top: 32px; }
   .btn-reroll {
     border: 1.5px solid var(--grey-line);
     background: rgba(255, 255, 255, 0.8);
-    color: var(--ink);
-    padding: 12px 28px;
-    border-radius: 999px;
+    color: var(--ink); padding: 12px 28px; border-radius: 999px;
     font-family: 'Inter', 'Noto Sans KR', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
   }
   .btn-reroll:hover {
-    border-color: var(--coral-deep);
-    color: var(--coral-deep);
+    border-color: var(--coral-deep); color: var(--coral-deep);
     transform: translateY(-1px);
   }
-  .btn-reroll svg {
-    width: 14px; height: 14px;
-    stroke: currentColor;
-    stroke-width: 2.5;
-    fill: none;
-  }
+  .btn-reroll svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; }
 
   /* ===== CONFETTI ===== */
-  .confetti-canvas {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 99;
-  }
+  .confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 99; }
 
   /* ===== RESPONSIVE ===== */
   @media (max-width: 640px) {
     .header { padding: 16px 18px 0; }
+    .sync-status { font-size: 10px; }
     .logo { height: 30px; }
     .container { padding: 0 16px 60px; }
     .hero { padding: 12px 0 24px; }
     .hero-eyebrow { font-size: 10px; margin-bottom: 10px; }
     .hero-sub { font-size: 13px; margin-top: 14px; }
-    .tip-card { padding: 12px 16px; gap: 10px; }
-    .tip-text { font-size: 12px; }
     .panel { padding: 20px; border-radius: 18px; }
     .panel-title { font-size: 14px; }
     .members-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
@@ -678,9 +426,9 @@
     .teams-grid { grid-template-columns: 1fr; }
     .team-name { font-size: 18px; }
     .btn-spin { padding: 18px 42px; font-size: 17px; }
+    .btn-confirm { padding: 16px 36px; font-size: 15px; }
     .puck-stage { width: 180px; height: 180px; }
     .puck { width: 130px; height: 130px; }
-    .puck-stick { width: 65px; height: 65px; }
     .shuffle-text { font-size: 24px; }
     .shuffle-overlay::before { width: 420px; height: 420px; }
     .shuffle-overlay::after { width: 260px; height: 260px; }
@@ -689,59 +437,20 @@
 </head>
 <body>
 
-<!-- ===== 배경 데코 ===== -->
 <div class="bg-deco" id="bgDeco"></div>
 
-<!-- ===== SVG DEFS ===== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <!-- 체크 아이콘: 스틱+체크마크 교차 -->
-    <symbol id="ic-stick-check" viewBox="0 0 24 24">
-      <!-- 스틱 (대각선) -->
-      <line x1="4" y1="6" x2="18" y2="20" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-      <!-- 스틱 블레이드 -->
-      <path d="M 17 19 L 21 19 L 21 21 L 16.5 21 Z" fill="white"/>
-      <!-- 체크마크 (X자) -->
-      <polyline points="6 14 9 17 14 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.85"/>
-    </symbol>
-
-    <!-- 헬멧 (라인) -->
-    <symbol id="ic-helmet" viewBox="0 0 24 24">
-      <path d="M 4 14 Q 4 5 12 5 Q 20 5 20 14 L 20 17 L 4 17 Z"
-            fill="none" stroke="#8A92A0" stroke-width="1.5" stroke-linejoin="round"/>
-      <line x1="6.5" y1="13" x2="17.5" y2="13" stroke="#8A92A0" stroke-width="1.2" stroke-linecap="round"/>
-      <line x1="6.5" y1="15.5" x2="17.5" y2="15.5" stroke="#8A92A0" stroke-width="1.2" stroke-linecap="round"/>
-    </symbol>
-
-    <!-- 하키 스틱 (멤버 옆) -->
-    <symbol id="ic-stick" viewBox="0 0 24 24">
-      <line x1="3" y1="4" x2="18" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      <path d="M 18 19 L 22 19 L 22 21 L 18 21 Z" fill="currentColor"/>
-    </symbol>
-
-    <!-- 큰 스틱 (퍽 위) -->
-    <symbol id="ic-stick-big" viewBox="0 0 100 100">
-      <line x1="20" y1="22" x2="78" y2="80" stroke="#F4A89A" stroke-width="7" stroke-linecap="round"/>
-      <line x1="22" y1="24" x2="76" y2="78" stroke="#FBD7CF" stroke-width="2" stroke-linecap="round"/>
-      <path d="M 72 80 L 92 80 L 92 92 L 72 92 Z" fill="#F4A89A" stroke="#FBD7CF" stroke-width="1"/>
-      <line x1="76" y1="84" x2="88" y2="84" stroke="#FBD7CF" stroke-width="1" opacity="0.6"/>
-    </symbol>
-
-    <!-- 빈 상태 퍽 -->
     <symbol id="ic-puck-empty" viewBox="0 0 80 80">
       <ellipse cx="40" cy="45" rx="32" ry="10" fill="var(--blue-soft)" opacity="0.5"/>
       <ellipse cx="40" cy="40" rx="32" ry="12" fill="var(--blue-deep)" opacity="0.6"/>
     </symbol>
-
-    <!-- 입체 퍽 (배경 데코용) -->
     <symbol id="deco-puck" viewBox="0 0 60 60">
       <ellipse cx="30" cy="38" rx="24" ry="6" fill="#1A1F28" opacity="0.85"/>
       <ellipse cx="30" cy="34" rx="24" ry="10" fill="#2A2F38"/>
       <ellipse cx="30" cy="32" rx="22" ry="6" fill="#3A3F48" opacity="0.6"/>
       <ellipse cx="24" cy="30" rx="6" ry="2" fill="#5A5F68" opacity="0.4"/>
     </symbol>
-
-    <!-- 하키 스틱 (배경 데코용) -->
     <symbol id="deco-stick" viewBox="0 0 80 80">
       <line x1="10" y1="14" x2="62" y2="66" stroke="#5B6478" stroke-width="5" stroke-linecap="round"/>
       <line x1="12" y1="16" x2="60" y2="64" stroke="#8A92A0" stroke-width="1.5" stroke-linecap="round"/>
@@ -752,6 +461,10 @@
 </svg>
 
 <header class="header">
+  <div class="sync-status">
+    <span class="sync-dot" id="syncDot"></span>
+    <span id="syncLabel">CONNECTING...</span>
+  </div>
   <img src="logo.png" alt="WEST HOCKEY" class="logo" onerror="this.style.display='none'">
 </header>
 
@@ -778,9 +491,7 @@
   </section>
 
   <div class="cta-wrap">
-    <button class="btn-spin" id="spinBtn">
-      <span>퍽 드롭!</span>
-    </button>
+    <button class="btn-spin" id="spinBtn"><span>퍽 드롭!</span></button>
   </div>
 
   <div class="result-status" id="resultStatus"></div>
@@ -791,6 +502,14 @@
       <div class="empty-state-text">위 버튼을 눌러 팀을 편성해주세요</div>
     </div>
     <div class="teams-grid" id="teamsGrid" style="display:none;"></div>
+
+    <div class="confirm-wrap" id="confirmWrap">
+      <div class="confirm-status" id="confirmStatus">팀장 <strong id="captainCount">0</strong>/4명 지정됨</div>
+      <button class="btn-confirm" id="confirmBtn" disabled>
+        <span>🔒</span><span id="confirmBtnText">팀 확정하기</span>
+      </button>
+    </div>
+
     <div class="reroll-wrap" id="rerollWrap" style="display:none;">
       <button class="btn-reroll" id="rerollBtn">
         <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -802,21 +521,45 @@
 </div>
 
 <div class="shuffle-overlay" id="shuffleOverlay">
-  <div class="puck-stage">
-    <div class="puck"></div>
-  </div>
+  <div class="puck-stage"><div class="puck"></div></div>
   <div class="shuffle-text">DROP THE <em>PUCK!</em></div>
   <div class="shuffle-names" id="shuffleNames">&nbsp;</div>
 </div>
 
 <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
 
+<div class="toast" id="toast"><span id="toastIcon">✓</span><span id="toastMsg">완료</span></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-  // ===== 배경 데코 생성 =====
+  // ===== Firebase 초기화 =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0kRXjjh2VvDWtTBZQzLC4wFn7ZvrfdiI",
+    authDomain: "west-hockey.firebaseapp.com",
+    databaseURL: "https://west-hockey-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "west-hockey",
+    storageBucket: "west-hockey.firebasestorage.app",
+    messagingSenderId: "261227121715",
+    appId: "1:261227121715:web:2516bc48831e2023de6746",
+    measurementId: "G-S96YJYZJZN"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // 동기화 상태 표시
+  db.ref('.info/connected').on('value', snap => {
+    const connected = snap.val() === true;
+    document.getElementById('syncDot').classList.toggle('connected', connected);
+    document.getElementById('syncLabel').textContent = connected ? 'SYNCED' : 'OFFLINE';
+  });
+
+  // 배경 데코 생성
   (function setupBgDeco() {
     const deco = document.getElementById('bgDeco');
     const colors = ['#FBD7CF', '#C8E8E0', '#CFDDF0', '#F4A89A', '#5FB8A8', '#7DA3D9'];
-    // 작은 닷 18개
     for (let i = 0; i < 18; i++) {
       const dot = document.createElement('div');
       dot.className = 'bg-deco-item dot';
@@ -830,7 +573,6 @@
       dot.style.animationDuration = (6 + Math.random() * 6) + 's';
       deco.appendChild(dot);
     }
-    // 퍽 4개
     for (let i = 0; i < 4; i++) {
       const wrap = document.createElement('div');
       wrap.className = 'bg-deco-item';
@@ -845,7 +587,6 @@
       wrap.innerHTML = `<svg width="100%" height="100%"><use href="#deco-puck"/></svg>`;
       deco.appendChild(wrap);
     }
-    // 스틱 3개
     for (let i = 0; i < 3; i++) {
       const wrap = document.createElement('div');
       wrap.className = 'bg-deco-item';
@@ -871,7 +612,6 @@
   ];
   const ALL_MEMBERS = [...SEED_MEMBERS, ...REGULAR_MEMBERS];
 
-  // 성별 매핑 (M: 남, F: 여) — 성비 균등 분배용
   const GENDER = {
     '김동현':'M', '김석현':'M', '김세형':'M', '안지용':'M', '유광현':'M',
     '이지훈':'M', '이태경':'M', '장병주':'M', '조우제':'M', '최정학':'M',
@@ -880,18 +620,17 @@
     '이다연':'F', '지혜은':'F', '김가연':'F'
   };
 
+  // 팀 라벨 → 색상값 (B 페이지와 동일)
   const TEAM_DATA = [
-    { label: 'A' },
-    { label: 'B' },
-    { label: 'C' },
-    { label: 'D' }
+    { label: '빨강', key: 'a', id: 't1', color: '#E88A78' },
+    { label: '파랑', key: 'b', id: 't2', color: '#4A7BC8' },
+    { label: '노랑', key: 'c', id: 't3', color: '#E8B800' },
+    { label: '초록', key: 'd', id: 't4', color: '#4A9C8C' }
   ];
 
-  // 팀장 상태 — key: 팀 인덱스, value: 멤버 이름
   let captainsState = {};
   let currentTeams = null;
 
-  // ===== State =====
   const checkedState = new Map();
   ALL_MEMBERS.forEach(name => checkedState.set(name, true));
 
@@ -905,6 +644,11 @@
   const shuffleNames = document.getElementById('shuffleNames');
   const rerollWrap = document.getElementById('rerollWrap');
   const rerollBtn = document.getElementById('rerollBtn');
+  const confirmWrap = document.getElementById('confirmWrap');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const confirmBtnText = document.getElementById('confirmBtnText');
+  const captainCountEl = document.getElementById('captainCount');
+  const confirmStatusEl = document.getElementById('confirmStatus');
 
   function renderMembers() {
     grid.innerHTML = '';
@@ -913,7 +657,6 @@
     const ordered = [...seedSorted, ...regSorted];
 
     ordered.forEach(name => {
-      const isSeed = SEED_MEMBERS.includes(name);
       const checked = checkedState.get(name);
       const chip = document.createElement('div');
       chip.className = 'member-chip' + (checked ? ' checked' : '');
@@ -960,13 +703,11 @@
     return a;
   }
 
-  // 분산 제약 그룹 — 각 그룹 내에서는 모두 다른 팀이어야 함
   const SPREAD_GROUPS = [
-    ['이지훈', '박민채', '김세형'],  // 그룹 A — 3명 모두 다른 팀
-    ['최정학', '지혜은']               // 그룹 B — 2명 서로 다른 팀
+    ['이지훈', '박민채', '김세형'],
+    ['최정학', '지혜은']
   ];
 
-  // 상호 배제 쌍 — 이 두 명은 같은 팀이 될 수 없음
   const EXCLUSION_PAIRS = [
     ['박민채', '김가연'],
     ['지혜은', '조우제'],
@@ -974,7 +715,6 @@
     ['안지용', '김동현']
   ];
 
-  // 헬퍼: 멤버를 특정 팀에 배치해도 상호 배제 제약을 위반하지 않는가?
   function canPlaceInTeam(name, team) {
     return !team.some(m => EXCLUSION_PAIRS.some(([a, b]) =>
       (a === name && b === m.name) || (b === name && a === m.name)
@@ -984,25 +724,16 @@
   function buildTeams() {
     const selectedAll = ALL_MEMBERS.filter(n => checkedState.get(n));
     const total = selectedAll.length;
-
-    if (total < 4) {
-      return { error: '최소 4명 이상 선택해야 합니다.' };
-    }
+    if (total < 4) return { error: '최소 4명 이상 선택해야 합니다.' };
 
     const teamCount = 4;
-
-    // 모든 제약을 만족하는 배치를 시도. 실패하면 재시도 (최대 200회)
     let result = null;
     for (let attempt = 0; attempt < 200; attempt++) {
       result = tryBuild(selectedAll, total, teamCount);
       if (result) break;
     }
+    if (!result) return { error: '제약 조건을 만족하는 팀 편성이 불가능합니다.' };
 
-    if (!result) {
-      return { error: '제약 조건을 만족하는 팀 편성이 불가능합니다.' };
-    }
-
-    // 팀 라벨 매칭 랜덤화
     const teamOrder = shuffle([0,1,2,3]);
     const ordered = teamOrder.map(i => result[i]);
 
@@ -1018,8 +749,6 @@
 
   function tryBuild(selectedAll, total, teamCount) {
     const teams = Array.from({length: teamCount}, () => []);
-
-    // 1) 조별 목표 인원
     const base = Math.floor(total / teamCount);
     const remainder = total % teamCount;
     const bigTeams = shuffle([0,1,2,3]).slice(0, remainder);
@@ -1028,7 +757,6 @@
     );
     const remainingSlots = [...targetSizes];
 
-    // 2) 분산 제약 그룹 + 상호 배제 쌍 동시 만족하도록 그룹 멤버 우선 배치
     const placedInGroup = new Map();
     SPREAD_GROUPS.forEach((g, gi) => placedInGroup.set(gi, new Set()));
 
@@ -1047,7 +775,7 @@
         !usedTeams.has(i) &&
         canPlaceInTeam(name, teams[i])
       );
-      if (candidates.length === 0) return null; // 이번 시도 실패
+      if (candidates.length === 0) return null;
       candidates.sort((a, b) => {
         if (remainingSlots[b] !== remainingSlots[a]) return remainingSlots[b] - remainingSlots[a];
         return Math.random() - 0.5;
@@ -1058,7 +786,6 @@
       usedTeams.add(target);
     }
 
-    // 3) 나머지 멤버 성별 균등 + 상호 배제 만족 배치
     const placedNames = new Set(shuffledSpread.map(s => s.name));
     const otherMembers = selectedAll.filter(n => !placedNames.has(n));
 
@@ -1066,12 +793,10 @@
     const M = shuffle(otherMembers.filter(n => GENDER[n] === 'M'));
 
     function placeWithConstraint(name) {
-      // 자리 남고 상호 배제 위반 안 하는 조 후보
       const candidates = [0,1,2,3].filter(i =>
         remainingSlots[i] > 0 && canPlaceInTeam(name, teams[i])
       );
       if (candidates.length === 0) return false;
-      // 자리 많은 조 우선 (인원 균등 유지)
       candidates.sort((a, b) => {
         if (remainingSlots[b] !== remainingSlots[a]) return remainingSlots[b] - remainingSlots[a];
         return Math.random() - 0.5;
@@ -1082,8 +807,6 @@
       return true;
     }
 
-    // 라운드로빈 대신 제약 우선 — 상호 배제 대상 멤버를 먼저 처리
-    // (제약이 많은 멤버를 늦게 처리하면 자리가 없을 수 있음)
     const constrainedNames = new Set();
     EXCLUSION_PAIRS.forEach(([a, b]) => { constrainedNames.add(a); constrainedNames.add(b); });
 
@@ -1092,11 +815,9 @@
     const freeF = F.filter(n => !constrainedNames.has(n));
     const freeM = M.filter(n => !constrainedNames.has(n));
 
-    // 제약 있는 멤버부터 (성별 섞어서)
     for (const n of shuffle([...constrainedF, ...constrainedM])) {
       if (!placeWithConstraint(n)) return null;
     }
-    // 그 다음 자유 멤버 — 여성 먼저 (성비 균등)
     for (const n of freeF) {
       if (!placeWithConstraint(n)) return null;
     }
@@ -1114,7 +835,6 @@
       void puckEl.offsetWidth;
       puckEl.style.animation = '';
     }
-
     shuffleOverlay.classList.add('show');
 
     const checkedNames = ALL_MEMBERS.filter(n => checkedState.get(n));
@@ -1136,10 +856,12 @@
       emptyState.style.display = 'block';
       teamsGrid.style.display = 'none';
       rerollWrap.style.display = 'none';
+      confirmWrap.classList.remove('show');
       return;
     }
     const { teams, total } = result;
     currentTeams = teams;
+    captainsState = {}; // 재롤 시 팀장 초기화
 
     const sizesStr = teams.map(t => t.size).join(' / ');
     resultStatus.innerHTML = `총 <strong>${total}명</strong> · 조별 인원 <strong>${sizesStr}</strong>`;
@@ -1147,26 +869,29 @@
     emptyState.style.display = 'none';
     teamsGrid.style.display = 'grid';
     rerollWrap.style.display = 'flex';
+    confirmWrap.classList.add('show');
     teamsGrid.innerHTML = '';
 
     teams.forEach((team, idx) => {
       teamsGrid.appendChild(buildTeamCard(team, idx, true));
     });
 
+    updateConfirmStatus();
+    resetConfirmButton();
     setTimeout(() => launchConfetti(), 200);
   }
 
   function buildTeamCard(team, idx, animate) {
     const card = document.createElement('div');
     const captainName = captainsState[idx];
-    card.className = `team-card team-${team.label.toLowerCase()}`;
+    card.className = `team-card team-${team.key}`;
 
     const membersHtml = team.members.map((m, i) => {
       const isCaptain = m.name === captainName;
       const animStyle = animate ? `animation-delay:${i * 70}ms` : `animation:none; opacity:1; transform:none`;
       return `
         <li class="team-member${isCaptain ? ' is-captain' : ''}" style="${animStyle}" data-team-idx="${idx}" data-member-name="${m.name}">
-          <span class="member-dot" style="background: var(--team-${team.label.toLowerCase()})"></span>
+          <span class="member-dot" style="background: var(--team-${team.key})"></span>
           <span class="member-name-text">${m.name}</span>
           <button class="captain-check" aria-label="팀장 지정"></button>
         </li>
@@ -1196,6 +921,8 @@
           captainsState[tIdx] = mName;
         }
         rerenderTeams();
+        updateConfirmStatus();
+        resetConfirmButton();
       });
     });
 
@@ -1214,6 +941,77 @@
       teamsGrid.appendChild(buildTeamCard(team, idx, false));
     });
   }
+
+  function updateConfirmStatus() {
+    if (!currentTeams) return;
+    const captainCount = Object.keys(captainsState).length;
+    captainCountEl.textContent = captainCount;
+    if (captainCount === 4) {
+      confirmStatusEl.classList.add('ready');
+      confirmStatusEl.innerHTML = `✓ 모든 팀장 지정 완료 — 확정 가능`;
+      confirmBtn.disabled = false;
+    } else {
+      confirmStatusEl.classList.remove('ready');
+      confirmStatusEl.innerHTML = `팀장 <strong>${captainCount}</strong>/4명 지정됨 (모든 팀장이 지정되어야 확정 가능)`;
+      confirmBtn.disabled = true;
+    }
+  }
+
+  function resetConfirmButton() {
+    confirmBtn.classList.remove('confirmed');
+    confirmBtnText.textContent = '팀 확정하기';
+  }
+
+  // 토스트
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    const msgEl = document.getElementById('toastMsg');
+    icon.textContent = isError ? '⚠' : '✓';
+    msgEl.textContent = msg;
+    toast.classList.toggle('error', isError);
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // 팀 확정 → Firebase 전송
+  confirmBtn.addEventListener('click', () => {
+    if (!currentTeams) return;
+    const captainCount = Object.keys(captainsState).length;
+    if (captainCount !== 4) {
+      showToast('모든 팀의 팀장을 지정해주세요', true);
+      return;
+    }
+
+    // currentTeams는 라벨 셔플 결과이므로 key(a/b/c/d) 기준으로 정렬해서 t1~t4로 매핑
+    const sorted = [...currentTeams].sort((x, y) => x.key.localeCompare(y.key));
+    const payload = sorted.map((team, idx) => {
+      const teamIdxInCurrent = currentTeams.findIndex(t => t.key === team.key);
+      const captainName = captainsState[teamIdxInCurrent];
+      return {
+        id: team.id,
+        name: captainName + '팀',
+        color: team.color
+      };
+    });
+
+    confirmBtn.disabled = true;
+    confirmBtnText.textContent = '전송 중...';
+
+    db.ref('whmt2026/teams').set(payload)
+      .then(() => {
+        confirmBtn.classList.add('confirmed');
+        confirmBtnText.textContent = '✓ 확정 완료';
+        confirmBtn.disabled = false;
+        const names = payload.map(p => p.name).join(', ');
+        showToast(`팀 확정 완료: ${names}`);
+      })
+      .catch(err => {
+        confirmBtn.disabled = false;
+        confirmBtnText.textContent = '팀 확정하기';
+        showToast('전송 실패: ' + err.message, true);
+      });
+  });
 
   function runRoulette() {
     const result = buildTeams();
@@ -1235,7 +1033,7 @@
   spinBtn.addEventListener('click', runRoulette);
   rerollBtn.addEventListener('click', runRoulette);
 
-  // ===== 컨페티 (파스텔 컬러) =====
+  // 컨페티
   const canvas = document.getElementById('confettiCanvas');
   const ctx = canvas.getContext('2d');
   let particles = [];
@@ -1250,7 +1048,6 @@
 
   function launchConfetti() {
     particles = [];
-    // 파스텔 팔레트만 사용
     const colors = ['#F4A89A', '#FBD7CF', '#5FB8A8', '#C8E8E0', '#7DA3D9', '#CFDDF0', '#E88A78'];
     const types = ['circle', 'square', 'rect'];
     const count = 100;
@@ -1282,7 +1079,6 @@
     ctx.rotate(p.rotation);
     ctx.globalAlpha = p.opacity;
     ctx.fillStyle = p.color;
-
     if (p.type === 'circle') {
       ctx.beginPath();
       ctx.arc(0, 0, p.size * 0.6, 0, Math.PI * 2);
@@ -1290,7 +1086,6 @@
     } else if (p.type === 'square') {
       ctx.fillRect(-p.size*0.5, -p.size*0.5, p.size, p.size);
     } else {
-      // 직사각형 (얇은 종이 모양)
       ctx.fillRect(-p.size*0.8, -p.size*0.25, p.size*1.6, p.size*0.5);
     }
     ctx.restore();
@@ -1308,7 +1103,6 @@
       drawParticle(p);
     });
     particles = particles.filter(p => p.life > 0 && p.y < canvas.height + 50);
-
     if (particles.length > 0) {
       requestAnimationFrame(updateConfetti);
     } else {
