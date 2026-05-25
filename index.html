@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WEST HOCKEY · 팀 룰렛</title>
+<title>랜덤 · 팀 룰렛</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Archivo+Black&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -491,7 +491,7 @@
   </section>
 
   <div class="cta-wrap">
-    <button class="btn-spin" id="spinBtn"><span>퍽 드롭!</span></button>
+    <button class="btn-spin" id="spinBtn"><span>GO!</span></button>
   </div>
 
   <div class="result-status" id="resultStatus"></div>
@@ -603,22 +603,15 @@
     }
   })();
 
-  // ===== 멤버 데이터 =====
-  const SEED_MEMBERS = ['김세형', '장병주', '최정학', '지혜은'];
+ // ===== 멤버 데이터 =====
   const REGULAR_MEMBERS = [
-    '강다연', '강소현', '김동현', '김석현', '정선경',
-    '문인화', '안지용', '유광현', '이다연', '이지훈',
-    '이태경', '조우제', '최준성', '박민채', '김가연', '산드로'
+    '최정학', '한윤구', '심재형', '김태준', '남동현',
+    '박명준', '박병준', '박현우', '박성훈', '서우재',
+    '서준택', '신선우', '신준섭', '이경수', '이용현',
+    '이규성', '이호석', '장승현', '정은철', '윤주성',
+    '민진홍'
   ];
-  const ALL_MEMBERS = [...SEED_MEMBERS, ...REGULAR_MEMBERS];
-
-  const GENDER = {
-    '김동현':'M', '김석현':'M', '김세형':'M', '안지용':'M', '유광현':'M',
-    '이지훈':'M', '이태경':'M', '장병주':'M', '조우제':'M', '최정학':'M',
-    '최준성':'M', '박민채':'M', '산드로':'M',
-    '강다연':'F', '강소현':'F', '정선경':'F', '문인화':'F',
-    '이다연':'F', '지혜은':'F', '김가연':'F'
-  };
+  const ALL_MEMBERS = REGULAR_MEMBERS;
 
   // 팀 라벨 → 색상값 (B 페이지와 동일)
   const TEAM_DATA = [
@@ -652,9 +645,7 @@
 
   function renderMembers() {
     grid.innerHTML = '';
-    const seedSorted = [...SEED_MEMBERS].sort((a,b) => a.localeCompare(b, 'ko'));
-    const regSorted = [...REGULAR_MEMBERS].sort((a,b) => a.localeCompare(b, 'ko'));
-    const ordered = [...seedSorted, ...regSorted];
+    const ordered = [...REGULAR_MEMBERS].sort((a,b) => a.localeCompare(b, 'ko'));
 
     ordered.forEach(name => {
       const checked = checkedState.get(name);
@@ -703,22 +694,8 @@
     return a;
   }
 
-  const SPREAD_GROUPS = [
-    ['이지훈', '박민채', '김세형'],
-    ['최정학', '지혜은']
-  ];
-
-  const EXCLUSION_PAIRS = [
-    ['박민채', '김가연'],
-    ['지혜은', '조우제'],
-    ['지혜은', '김석현'],
-    ['안지용', '김동현']
-  ];
-
   function canPlaceInTeam(name, team) {
-    return !team.some(m => EXCLUSION_PAIRS.some(([a, b]) =>
-      (a === name && b === m.name) || (b === name && a === m.name)
-    ));
+    return true;
   }
 
   function buildTeams() {
@@ -757,24 +734,9 @@
     );
     const remainingSlots = [...targetSizes];
 
-    const placedInGroup = new Map();
-    SPREAD_GROUPS.forEach((g, gi) => placedInGroup.set(gi, new Set()));
-
-    const allSpreadMembers = [];
-    SPREAD_GROUPS.forEach((g, gi) => {
-      g.filter(n => selectedAll.includes(n)).forEach(name => {
-        allSpreadMembers.push({ name, groupIdx: gi });
-      });
-    });
-    const shuffledSpread = shuffle(allSpreadMembers);
-
-    for (const { name, groupIdx } of shuffledSpread) {
-      const usedTeams = placedInGroup.get(groupIdx);
-      const candidates = [0,1,2,3].filter(i =>
-        remainingSlots[i] > 0 &&
-        !usedTeams.has(i) &&
-        canPlaceInTeam(name, teams[i])
-      );
+    const shuffled = shuffle(selectedAll);
+    for (const name of shuffled) {
+      const candidates = [0,1,2,3].filter(i => remainingSlots[i] > 0);
       if (candidates.length === 0) return null;
       candidates.sort((a, b) => {
         if (remainingSlots[b] !== remainingSlots[a]) return remainingSlots[b] - remainingSlots[a];
@@ -783,48 +745,7 @@
       const target = candidates[0];
       teams[target].push({ name });
       remainingSlots[target]--;
-      usedTeams.add(target);
     }
-
-    const placedNames = new Set(shuffledSpread.map(s => s.name));
-    const otherMembers = selectedAll.filter(n => !placedNames.has(n));
-
-    const F = shuffle(otherMembers.filter(n => GENDER[n] === 'F'));
-    const M = shuffle(otherMembers.filter(n => GENDER[n] === 'M'));
-
-    function placeWithConstraint(name) {
-      const candidates = [0,1,2,3].filter(i =>
-        remainingSlots[i] > 0 && canPlaceInTeam(name, teams[i])
-      );
-      if (candidates.length === 0) return false;
-      candidates.sort((a, b) => {
-        if (remainingSlots[b] !== remainingSlots[a]) return remainingSlots[b] - remainingSlots[a];
-        return Math.random() - 0.5;
-      });
-      const target = candidates[0];
-      teams[target].push({ name });
-      remainingSlots[target]--;
-      return true;
-    }
-
-    const constrainedNames = new Set();
-    EXCLUSION_PAIRS.forEach(([a, b]) => { constrainedNames.add(a); constrainedNames.add(b); });
-
-    const constrainedF = F.filter(n => constrainedNames.has(n));
-    const constrainedM = M.filter(n => constrainedNames.has(n));
-    const freeF = F.filter(n => !constrainedNames.has(n));
-    const freeM = M.filter(n => !constrainedNames.has(n));
-
-    for (const n of shuffle([...constrainedF, ...constrainedM])) {
-      if (!placeWithConstraint(n)) return null;
-    }
-    for (const n of freeF) {
-      if (!placeWithConstraint(n)) return null;
-    }
-    for (const n of freeM) {
-      if (!placeWithConstraint(n)) return null;
-    }
-
     return teams;
   }
 
