@@ -18,8 +18,8 @@
     --blue-soft: #CFDDF0;
     --blue-deep: #4A7BC8;
     /* 콜드 그레이 (모던 베이스) */
-    --bg-base: #F0F2F5;
-    --bg-soft: #F7F8FA;
+    --bg-base: #FFFFFF;
+    --bg-soft: #FFFFFF;
     --grey-line: #E2E5EB;
     --grey-mid: #C5CAD2;
     --grey-deep: #8A92A0;
@@ -51,7 +51,7 @@
   }
 
   /* ===== 배경 데코 ===== */
-  .bg-deco { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  .bg-deco { display: none; }
   .bg-deco-item { position: absolute; opacity: 0.55; animation: floatGentle 8s ease-in-out infinite; }
   .bg-deco-item.dot { border-radius: 50%; }
   @keyframes floatGentle {
@@ -59,30 +59,27 @@
     50% { transform: translate(6px, -10px); }
   }
 
-  /* ===== HEADER ===== */
   .header {
-    padding: 24px 28px 0;
-    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 28px;
+    display: flex; align-items: center; justify-content: center;
+    position: sticky; top: 0; z-index: 50;
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--grey-line);
   }
-  .sync-status {
-    display: flex; align-items: center; gap: 6px;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px; font-weight: 700;
-    color: var(--ink-soft);
-    letter-spacing: 0.05em;
+  .header .sync-status {
+    position: absolute; left: 28px; top: 50%;
+    transform: translateY(-50%);
   }
-  .sync-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #C5CAD2;
-    transition: background 0.3s;
+  .header-title {
+    display: flex; align-items: center; gap: 18px;
+    font-family: 'Archivo Black', 'Noto Sans KR', sans-serif;
   }
-  .sync-dot.connected {
-    background: var(--mint-deep);
-    box-shadow: 0 0 6px rgba(74, 156, 140, 0.5);
-    animation: syncPulse 2s infinite;
+  .header-title-text {
+    font-size: 28px; font-weight: 900;
+    color: var(--ink); letter-spacing: -0.02em;
+    white-space: nowrap;
   }
-  @keyframes syncPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-  .logo { height: 38px; width: auto; opacity: 0.85; }
+  .logo { height: 48px; width: auto; opacity: 1; display: block; }
 
   .container {
     max-width: 1100px; margin: 0 auto;
@@ -411,9 +408,11 @@
 
   /* ===== RESPONSIVE ===== */
   @media (max-width: 640px) {
-    .header { padding: 16px 18px 0; }
-    .sync-status { font-size: 10px; }
-    .logo { height: 30px; }
+    .header { padding: 14px 12px; }
+    .header .sync-status { left: 10px; font-size: 9px; }
+    .header-title { gap: 10px; }
+    .header-title-text { font-size: 16px; }
+    .logo { height: 32px; }
     .container { padding: 0 16px 60px; }
     .hero { padding: 12px 0 24px; }
     .hero-eyebrow { font-size: 10px; margin-bottom: 10px; }
@@ -465,7 +464,11 @@
     <span class="sync-dot" id="syncDot"></span>
     <span id="syncLabel">CONNECTING...</span>
   </div>
-  <img src="logo.png" alt="WEST HOCKEY" class="logo" onerror="this.style.display='none'">
+  <div class="header-title">
+    <span class="header-title-text">패널티 MT</span>
+    <img src="logo.png" alt="WEST HOCKEY" class="logo" onerror="this.style.display='none'">
+    <span class="header-title-text">랜덤 팀 분배</span>
+  </div>
 </header>
 
 <div class="container">
@@ -513,7 +516,7 @@
 
 <div class="shuffle-overlay" id="shuffleOverlay">
   <div class="puck-stage"><div class="puck"></div></div>
-  <div class="shuffle-text">DROP THE <em>PUCK!</em></div>
+  <div class="shuffle-text">랜덤 <em>배분중</em></div>
   <div class="shuffle-names" id="shuffleNames">&nbsp;</div>
 </div>
 
